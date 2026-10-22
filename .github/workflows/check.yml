@@ -1,0 +1,55 @@
+name: Exact preview checks
+on:
+  push:
+    branches: [main]
+    paths-ignore: [README.md, VALIDATION.md]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.3']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - run: python3 tools/package.py
+      - run: find src vendor -name '*.php' -print0 | xargs -0 -n1 php -l
+      - run: php -l rankavia.php && php -l uninstall.php
+  plugin-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+      - run: python3 tools/package.py
+      - run: unzip -q artifacts/rankavia.zip -d /tmp/rankavia-pcp
+      - uses: wordpress/plugin-check-action@v1
+        with:
+          build-dir: /tmp/rankavia-pcp/rankavia
+          categories: plugin_repo
+          # Match WP-CLI's existing error gate. Warnings remain visible in output;
+          # known direct SQL/no-cache warnings are documented in VALIDATION.md.
+          ignore-warnings: true
+  source-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: _development
+      - run: npm run build
+        working-directory: _development
+      - name: Verify generated assets match released runtime
+        run: diff -rq build _development/plugins/rankavia/build

@@ -1,0 +1,154 @@
+[
+  {
+    "id": "seo.title.present",
+    "category": "seo",
+    "title": "Title tag present",
+    "severity": "critical",
+    "weight": 4,
+    "description": "Every page needs a <title>; it is the headline in search results."
+  },
+  {
+    "id": "seo.title.length",
+    "category": "seo",
+    "title": "Title length",
+    "severity": "medium",
+    "weight": 2,
+    "description": "Titles between 30 and 60 characters display fully in search results."
+  },
+  {
+    "id": "seo.description.present",
+    "category": "seo",
+    "title": "Meta description present",
+    "severity": "high",
+    "weight": 3,
+    "description": "A meta description gives search and answer engines a summary to show."
+  },
+  {
+    "id": "seo.description.length",
+    "category": "seo",
+    "title": "Meta description length",
+    "severity": "low",
+    "weight": 1,
+    "description": "Descriptions between 70 and 160 characters avoid truncation."
+  },
+  {
+    "id": "seo.canonical.present",
+    "category": "seo",
+    "title": "Canonical URL",
+    "severity": "high",
+    "weight": 3,
+    "description": "An absolute canonical link prevents duplicate-content dilution."
+  },
+  {
+    "id": "seo.h1.single",
+    "category": "seo",
+    "title": "Single H1",
+    "severity": "high",
+    "weight": 3,
+    "description": "One H1 states the page topic for crawlers and assistive tech."
+  },
+  {
+    "id": "seo.viewport.present",
+    "category": "seo",
+    "title": "Mobile viewport",
+    "severity": "critical",
+    "weight": 4,
+    "description": "A responsive viewport meta tag is required for mobile-first indexing."
+  },
+  {
+    "id": "seo.html.lang",
+    "category": "seo",
+    "title": "Language declared",
+    "severity": "medium",
+    "weight": 2,
+    "description": "The html lang attribute tells engines and screen readers the content language."
+  },
+  {
+    "id": "seo.images.alt",
+    "category": "seo",
+    "title": "Image alt text",
+    "severity": "medium",
+    "weight": 2,
+    "description": "Alt attributes make images indexable and accessible."
+  },
+  {
+    "id": "seo.og.basic",
+    "category": "seo",
+    "title": "Open Graph tags",
+    "severity": "medium",
+    "weight": 2,
+    "description": "og:title, og:description and og:image control how the page is shared."
+  },
+  {
+    "id": "seo.robots.indexable",
+    "category": "seo",
+    "title": "Indexable",
+    "severity": "critical",
+    "weight": 4,
+    "description": "A noindex directive removes the page from search and AI answers."
+  },
+  {
+    "id": "seo.jsonld.valid",
+    "category": "seo",
+    "title": "Valid JSON-LD",
+    "severity": "high",
+    "weight": 3,
+    "description": "Structured data must parse to be used for rich results and AI grounding."
+  },
+  {
+    "id": "aeo.headings.questions",
+    "category": "aeo",
+    "title": "Question headings",
+    "severity": "medium",
+    "weight": 2,
+    "description": "Headings phrased as questions match how people ask answer engines."
+  },
+  {
+    "id": "aeo.author.schema",
+    "category": "aeo",
+    "title": "Author markup",
+    "severity": "high",
+    "weight": 3,
+    "description": "Author and Person structured data carry E-E-A-T signals that answer engines weigh."
+  },
+  {
+    "id": "geo.semantic.article",
+    "category": "geo",
+    "title": "Semantic content wrapper",
+    "severity": "medium",
+    "weight": 2,
+    "description": "<article> or <main> lets generative engines isolate the primary content."
+  },
+  {
+    "id": "geo.updated.date",
+    "category": "geo",
+    "title": "Modified date",
+    "severity": "high",
+    "weight": 3,
+    "description": "AI-cited pages are fresher on average; expose a machine-readable modified date."
+  },
+  {
+    "id": "speed.images.dimensions",
+    "category": "speed",
+    "title": "Image dimensions",
+    "severity": "high",
+    "weight": 3,
+    "description": "Width and height attributes reserve space and prevent layout shift (CLS)."
+  },
+  {
+    "id": "speed.images.lazy",
+    "category": "speed",
+    "title": "Lazy-loaded images",
+    "severity": "medium",
+    "weight": 2,
+    "description": "Below-the-fold images should load lazily to protect LCP and bandwidth."
+  },
+  {
+    "id": "speed.scripts.blocking",
+    "category": "speed",
+    "title": "Render-blocking scripts",
+    "severity": "high",
+    "weight": 3,
+    "description": "Scripts in <head> without defer/async delay first paint and raise TBT."
+  }
+]

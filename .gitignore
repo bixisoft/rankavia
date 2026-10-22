@@ -1,0 +1,7 @@
+artifacts/
+_development/node_modules/
+_development/**/node_modules/
+_development/**/build/
+_development/**/dist/
+__pycache__/
+*.log

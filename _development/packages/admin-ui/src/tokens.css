@@ -1,0 +1,39 @@
+/*
+ * Design tokens shared by every Bixisoft plugin admin app. They mirror the marketing site palette.
+ * Status colours are fixed roles and never themed; colour never carries meaning alone.
+ */
+.bx-app {
+	color-scheme: light;
+	--bx-primary: #dd4a31;
+	--bx-primary-ink: #fff;
+	--bx-surface: #fcfcfb;
+	--bx-ink: #0b0b0b;
+	--bx-ink-2: #52514e;
+	--bx-muted: #898781;
+	--bx-border: rgba( 11, 11, 11, 0.1 );
+	--bx-good: #0ca30c;
+	--bx-warning: #fab219;
+	--bx-serious: #ec835a;
+	--bx-critical: #d03b3b;
+	--bx-none: #c3c2b7;
+	--bx-radius: 8px;
+	font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+	color: var( --bx-ink );
+}
+
+@supports ( color: oklch( 0.62 0.22 25 ) ) {
+	.bx-app {
+		--bx-primary: oklch( 0.62 0.22 25 );
+	}
+}
+
+@media ( prefers-color-scheme: dark ) {
+	.bx-app {
+		color-scheme: dark;
+		--bx-surface: #1a1a19;
+		--bx-ink: #f0efec;
+		--bx-ink-2: #c3c2b7;
+		--bx-border: rgba( 255, 255, 255, 0.1 );
+		--bx-none: #383835;
+	}
+}

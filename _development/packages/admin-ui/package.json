@@ -1,0 +1,22 @@
+{
+  "name": "@bixisoft/admin-ui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared React components for Bixisoft plugin admin screens (app shell, settings forms, score tiles, result table).",
+  "license": "GPL-2.0-or-later",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.8"
+  },
+  "peerDependencies": {
+    "@wordpress/api-fetch": ">=7",
+    "@wordpress/components": ">=28",
+    "@wordpress/data": ">=10",
+    "@wordpress/element": ">=6",
+    "@wordpress/i18n": ">=5",
+    "@wordpress/notices": ">=5"
+  }
+}

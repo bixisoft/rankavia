@@ -1,0 +1,19 @@
+{
+  "name": "bixisoft-plugins",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Bixisoft plugins monorepo: Rankavia SEO + AEO + GEO + Speed suite.",
+  "license": "GPL-2.0-or-later",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "packages/scorer",
+    "packages/admin-ui",
+    "plugins/rankavia"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace plugins/rankavia"
+  },
+  "devDependencies": {}
+}

@@ -1,6 +1,6 @@
 # Preview validation
 
-Release: v0.1.0-preview.1. Runtime version: 0.1.0. Public source preparation; release asset publication waits for final checks.
+Release: v0.1.0-preview.1. Runtime version: 0.1.0. Public development preview; release asset is the manifest-verified install ZIP.
 
 Install ZIP SHA256: `1d874530b15a6c3ac9ad14d9016c4dd66eee5f6fbd5357ca68a40919b7b5dd0b`.
 Reviewed predecessor ZIP SHA256: `7fa5cc7face1cbd8d8b702c001016982f52190d2c38574bc5a459944f3370d7d`.
@@ -16,7 +16,10 @@ All predecessor runtime files are byte-identical. Only full GPL LICENSE and SOUR
 
 ## Final publication checks
 
-A fresh Plugin Check against the license/source-notice additions and a source build are in progress. See repository Actions for remote results; this document will be updated before release assets are published. CI checks exact manifest/package bytes and PHP7.4/8.3 syntax. Plugin Check uses the existing plugin_repo error gate; warnings remain visible, with no ignored warning codes.
+Final license/source-notice ZIP: Plugin Check2.1 plugin_repo on owned local WordPress7.1.3/PHP8.2 fixture exited0 with 0 errors and34 migration warnings. Every packaged file matched the extracted test payload; the original PHP/JS runtime was unchanged. The temporary unexpected-markdown warning was fixed by using SOURCE.txt.
+
+[GitHub exact-preview checks](https://github.com/bixisoft/rankavia/actions/runs/39723952019) validate archive SHA256 reproduction, PHP7.4/8.3 syntax and Plugin Check with the plugin_repo error gate. Warnings remain visible, with no ignored warning codes. Rankavia also passed a fresh Node22 npm ci/build and byte comparison of every generated admin/editor asset against shipped build/. A local clean dependency install passed as additional source-install evidence.
+
 
 ## Open acceptance
 

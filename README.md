@@ -8,7 +8,7 @@ Metadata and social tags, dashboard visibility guidance, sitemap/robots/crawler 
 
 ## Download and install
 
-Release assets are being verified; once published, download **rankavia.zip** from [the preview release](https://github.com/bixisoft/rankavia/releases/tag/v0.1.0-preview.1). Upload that asset through WordPress Plugins â†’ Add New â†’ Upload Plugin, then activate. The GitHub-generated source archives contain development material and are not the install ZIP. Keep a database and file backup, especially before migration or changing asset loading.
+Download **rankavia.zip** from [the preview release](https://github.com/bixisoft/rankavia/releases/tag/v0.1.0-preview.1). Upload that asset through WordPress Plugins â†’ Add New â†’ Upload Plugin, then activate. The GitHub-generated source archives contain development material and are not the install ZIP. Keep a database and file backup, especially before migration or changing asset loading.
 
 Runtime requirements declared by the plugin: WordPress 6.5+, PHP 7.4+. Existing local runtime evidence uses WordPress 7.1.3/PHP 8.2. Exact PHP 7.4 syntax passes; actual minimum-version runtime, multisite, themes/builders and real source-plugin migration matrices remain incomplete. New CI results are additional evidence, not a replacement for that acceptance. Read [VALIDATION.md](VALIDATION.md) for limits and hashes.
 

@@ -3,7 +3,7 @@ import hashlib,json,pathlib,zipfile
 root=pathlib.Path(__file__).resolve().parent.parent
 m=json.loads((root/'release-manifest.json').read_text(encoding='utf-8'))
 out=root/'artifacts';out.mkdir(exist_ok=True)
-with zipfile.ZipFile(out/(m['slug']+'.zip'),'w',zipfile.ZIP_DEFLATED) as z:
+with zipfile.ZipFile(out/(m['slug']+'.zip'),'w',zipfile.ZIP_STORED) as z:
  for name,expected in sorted(m['runtimeFiles'].items()):
   rel=pathlib.PurePosixPath(name)
   if rel.is_absolute() or '..' in rel.parts: raise ValueError('Unsafe path')
@@ -12,7 +12,7 @@ with zipfile.ZipFile(out/(m['slug']+'.zip'),'w',zipfile.ZIP_DEFLATED) as z:
   data=p.read_bytes()
   if hashlib.sha256(data).hexdigest()!=expected: raise ValueError('Runtime changed: '+name)
   info=zipfile.ZipInfo(m['slug']+'/'+name,date_time=(2026,10,22,0,0,0))
-  info.create_system=3;info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o100644<<16
+  info.create_system=3;info.compress_type=zipfile.ZIP_STORED;info.external_attr=0o100644<<16
   z.writestr(info,data)
 archive=out/(m['slug']+'.zip')
 actual=hashlib.sha256(archive.read_bytes()).hexdigest()

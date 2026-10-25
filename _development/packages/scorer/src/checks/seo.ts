@@ -1,10 +1,26 @@
+import { NodeType, type HTMLElement } from 'node-html-parser';
 import type { Check } from '../types';
-import { attr, fail, info, linkByRel, metaContent, pass, truncate, warn } from '../dom';
+import { attr, byTag, fail, info, linkByRel, metaContent, pass, truncate, warn } from '../dom';
 
 const TITLE_MIN = 30;
 const TITLE_MAX = 60;
 const DESC_MIN = 70;
 const DESC_MAX = 160;
+
+function namedLink(anchor: HTMLElement): boolean {
+  if ((attr(anchor, 'aria-label') ?? '').trim()) return true;
+  if (anchor.querySelectorAll('img').some((image) => (attr(image, 'alt') ?? '').trim())) return true;
+  const stack = [...anchor.childNodes];
+  while (stack.length) {
+    const node = stack.pop()!;
+    if (node.nodeType === NodeType.TEXT_NODE && node.text.trim()) return true;
+    if (node.nodeType === NodeType.ELEMENT_NODE) {
+      const element = node as HTMLElement;
+      if (!['script', 'style', 'noscript', 'template'].includes(element.rawTagName.toLowerCase())) stack.push(...element.childNodes);
+    }
+  }
+  return false;
+}
 
 export const seoChecks: Check[] = [
   {
@@ -31,6 +47,15 @@ export const seoChecks: Check[] = [
     },
   },
   {
+    id: 'seo.title.unique',
+    run(ctx) {
+      const count = byTag(ctx, 'title').length;
+      const details = { count };
+      if (count === 0) return info(this.id, 'No title declaration to check for duplicates.', details);
+      return count === 1 ? pass(this.id, 'One title declaration.', details) : warn(this.id, `${count} title declarations found.`, details);
+    },
+  },
+  {
     id: 'seo.description.present',
     run(ctx) {
       const description = metaContent(ctx, 'name', 'description') ?? '';
@@ -54,6 +79,15 @@ export const seoChecks: Check[] = [
     },
   },
   {
+    id: 'seo.description.unique',
+    run(ctx) {
+      const count = ctx.metas.filter((meta) => meta.name === 'description').length;
+      const details = { count };
+      if (count === 0) return info(this.id, 'No meta description declaration to check for duplicates.', details);
+      return count === 1 ? pass(this.id, 'One meta description declaration.', details) : warn(this.id, `${count} meta description declarations found.`, details);
+    },
+  },
+  {
     id: 'seo.canonical.present',
     run(ctx) {
       const href = linkByRel(ctx, 'canonical')?.href ?? '';
@@ -62,6 +96,26 @@ export const seoChecks: Check[] = [
         return warn(this.id, 'Canonical href should be an absolute URL.', { href });
       }
       return pass(this.id, `Canonical: ${href}`, { href });
+    },
+  },
+  {
+    id: 'seo.canonical.unique',
+    run(ctx) {
+      const count = ctx.links.filter((link) => link.rel.includes('canonical')).length;
+      const details = { count };
+      if (count === 0) return info(this.id, 'No canonical declaration to check for duplicates.', details);
+      return count === 1 ? pass(this.id, 'One canonical declaration.', details) : warn(this.id, `${count} canonical declarations found.`, details);
+    },
+  },
+  {
+    id: 'seo.links.named',
+    run(ctx) {
+      const links = byTag(ctx, 'a').filter((anchor) => attr(anchor, 'href') !== undefined);
+      const total = links.length;
+      const missing = links.filter((anchor) => !namedLink(anchor)).length;
+      const details = { total, missing };
+      if (total === 0) return info(this.id, 'No links with href to check.', details);
+      return missing === 0 ? pass(this.id, `All ${total} links with href have a name.`, details) : warn(this.id, `${missing} of ${total} links with href have no name.`, details);
     },
   },
   {

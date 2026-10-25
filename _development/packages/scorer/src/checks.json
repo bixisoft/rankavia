@@ -16,6 +16,14 @@
     "description": "Titles between 30 and 60 characters display fully in search results."
   },
   {
+    "id": "seo.title.unique",
+    "category": "seo",
+    "title": "Unique title declaration",
+    "severity": "low",
+    "weight": 1,
+    "description": "Multiple title declarations can give crawlers conflicting page titles."
+  },
+  {
     "id": "seo.description.present",
     "category": "seo",
     "title": "Meta description present",
@@ -32,12 +40,36 @@
     "description": "Descriptions between 70 and 160 characters avoid truncation."
   },
   {
+    "id": "seo.description.unique",
+    "category": "seo",
+    "title": "Unique meta description declaration",
+    "severity": "low",
+    "weight": 1,
+    "description": "Multiple meta descriptions can give crawlers conflicting summaries."
+  },
+  {
     "id": "seo.canonical.present",
     "category": "seo",
     "title": "Canonical URL",
     "severity": "high",
     "weight": 3,
     "description": "An absolute canonical link prevents duplicate-content dilution."
+  },
+  {
+    "id": "seo.canonical.unique",
+    "category": "seo",
+    "title": "Unique canonical declaration",
+    "severity": "low",
+    "weight": 1,
+    "description": "Multiple canonical links can give crawlers conflicting URL preferences."
+  },
+  {
+    "id": "seo.links.named",
+    "category": "seo",
+    "title": "Named links",
+    "severity": "medium",
+    "weight": 2,
+    "description": "Links with href need detectable source text, an aria-label, or image alt text."
   },
   {
     "id": "seo.h1.single",

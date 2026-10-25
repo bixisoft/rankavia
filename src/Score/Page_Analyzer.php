@@ -73,13 +73,21 @@ final class Page_Analyzer {
 			: Result::fail( 'seo.title.present', __( 'The page has no <title>.', 'rankavia' ) );
 
 		$results[] = $this->length_check( 'seo.title.length', mb_strlen( $title ), self::TITLE_MIN, self::TITLE_MAX, 10, __( 'Title', 'rankavia' ) );
+		$results[] = $this->unique_check( 'seo.title.unique', count( $this->nodes( $xpath, '//title' ) ), 'title' );
 
 		$description = (string) $this->meta_content( $metas, 'name', 'description' );
 		$results[]   = '' !== $description
 			? Result::pass( 'seo.description.present', sprintf( /* translators: %s: meta description. */ __( 'Meta description: "%s"', 'rankavia' ), $this->truncate( $description ) ), array( 'description' => $description ) )
 			: Result::fail( 'seo.description.present', __( 'The page has no meta description.', 'rankavia' ) );
 
-		$results[] = $this->length_check( 'seo.description.length', mb_strlen( $description ), self::DESC_MIN, self::DESC_MAX, 20, __( 'Meta description', 'rankavia' ) );
+		$results[]         = $this->length_check( 'seo.description.length', mb_strlen( $description ), self::DESC_MIN, self::DESC_MAX, 20, __( 'Meta description', 'rankavia' ) );
+		$description_count = 0;
+		foreach ( $metas as $meta ) {
+			if ( 'description' === strtolower( $this->source_trim( $meta->getAttribute( 'name' ) ) ) ) {
+				++$description_count;
+			}
+		}
+		$results[] = $this->unique_check( 'seo.description.unique', $description_count, 'meta description' );
 
 		$canonical = $this->link_href( $xpath, 'canonical' );
 		if ( '' === $canonical ) {
@@ -88,6 +96,34 @@ final class Page_Analyzer {
 			$results[] = Result::warn( 'seo.canonical.present', __( 'Canonical href should be an absolute URL.', 'rankavia' ), array( 'href' => $canonical ) );
 		} else {
 			$results[] = Result::pass( 'seo.canonical.present', sprintf( /* translators: %s: canonical URL. */ __( 'Canonical: %s', 'rankavia' ), $canonical ), array( 'href' => $canonical ) );
+		}
+		$canonical_count = 0;
+		foreach ( $this->nodes( $xpath, '//link' ) as $link ) {
+			$tokens = preg_split( '/[\p{Z}\x{0009}-\x{000D}\x{FEFF}]+/u', strtolower( $this->source_trim( $link->getAttribute( 'rel' ) ) ) );
+			if ( is_array( $tokens ) && in_array( 'canonical', $tokens, true ) ) {
+				++$canonical_count;
+			}
+		}
+		$results[] = $this->unique_check( 'seo.canonical.unique', $canonical_count, 'canonical' );
+		$anchors   = $this->nodes( $xpath, '//a[@href]' );
+		$missing   = 0;
+		foreach ( $anchors as $anchor ) {
+			if ( $this->link_has_name( $anchor, $xpath ) ) {
+				continue;
+			}
+			++$missing;
+		}
+		$total   = count( $anchors );
+		$details = array(
+			'total'   => $total,
+			'missing' => $missing,
+		);
+		if ( 0 === $total ) {
+			$results[] = Result::info( 'seo.links.named', __( 'No links with href to check.', 'rankavia' ), $details );
+		} elseif ( 0 === $missing ) {
+			$results[] = Result::pass( 'seo.links.named', sprintf( /* translators: %d: checked link count. */ __( 'All %d links with href have a name.', 'rankavia' ), $total ), $details );
+		} else {
+			$results[] = Result::warn( 'seo.links.named', sprintf( /* translators: 1: unnamed links, 2: checked links. */ __( '%1$d of %2$d links with href have no name.', 'rankavia' ), $missing, $total ), $details );
 		}
 
 		$h1_count = count( $this->nodes( $xpath, '//h1' ) );
@@ -246,6 +282,65 @@ final class Page_Analyzer {
 		}
 
 		return $results;
+	}
+
+	/**
+	 * Check duplicate declarations.
+	 *
+	 * @param string $id Check id.
+	 * @param int    $count Declaration count.
+	 * @param string $label Declaration label.
+	 * @return Result
+	 */
+	private function unique_check( string $id, int $count, string $label ): Result {
+		$details = array( 'count' => $count );
+		if ( 0 === $count ) {
+			return Result::info( $id, sprintf( /* translators: %s: declaration label. */ __( 'No %s declaration to check for duplicates.', 'rankavia' ), $label ), $details );
+		}
+		return 1 === $count
+			? Result::pass( $id, sprintf( /* translators: %s: declaration label. */ __( 'One %s declaration.', 'rankavia' ), $label ), $details )
+			: Result::warn( $id, sprintf( /* translators: 1: declaration count, 2: declaration label. */ __( '%1$d %2$s declarations found.', 'rankavia' ), $count, $label ), $details );
+	}
+
+	/**
+	 * Find detectable source text, aria-label or image-alt names.
+	 *
+	 * @param DOMElement $anchor Link element.
+	 * @param DOMXPath   $xpath Query helper.
+	 * @return bool
+	 */
+	private function link_has_name( DOMElement $anchor, DOMXPath $xpath ): bool {
+		if ( '' !== $this->source_trim( $anchor->getAttribute( 'aria-label' ) ) ) {
+			return true;
+		}
+		$image_nodes = $xpath->query( './/img', $anchor );
+		if ( false !== $image_nodes ) {
+			foreach ( $image_nodes as $image ) {
+				if ( $image instanceof DOMElement && '' !== $this->source_trim( $image->getAttribute( 'alt' ) ) ) {
+					return true;
+				}
+			}
+		}
+		$text_nodes = $xpath->query( './/text()[not(ancestor::script or ancestor::style or ancestor::noscript or ancestor::template)]', $anchor );
+		if ( false !== $text_nodes ) {
+			foreach ( $text_nodes as $text_node ) {
+				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- DOM API property.
+				if ( '' !== $this->source_trim( $text_node->nodeValue ?? '' ) ) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Trim ECMAScript whitespace for parity with the shared TypeScript checks.
+	 *
+	 * @param string $value Source value.
+	 * @return string
+	 */
+	private function source_trim( string $value ): string {
+		return (string) preg_replace( '/^[\p{Z}\x{0009}-\x{000D}\x{FEFF}]+|[\p{Z}\x{0009}-\x{000D}\x{FEFF}]+$/u', '', $value );
 	}
 
 	/**

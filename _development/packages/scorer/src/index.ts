@@ -13,6 +13,8 @@ import type {
 export type * from './types';
 export { checks, metas, metaById };
 export { buildContext } from './dom';
+export { analyzeKeyphrase, normalizeKeyphrase } from './keyphrase';
+export type { KeyphraseCheck } from './keyphrase';
 
 /**
  * Scoring formula (identical to Bixisoft\Core\Score\Scorer in PHP):

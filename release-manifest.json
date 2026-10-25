@@ -2,7 +2,7 @@
   "slug": "rankavia",
   "tag": "v0.1.0-preview.2",
   "pluginVersion": "0.1.0",
-  "status": "prepared local development preview; not published or WordPress.org listed",
+  "status": "development preview; not WordPress.org listed",
   "inputReviewedZipSha256": "668c85ab5acf54bf33f0d4e2f490a040c208492686ceee7de364e89f890749cf",
   "packagingChanges": [
     "Added GPL LICENSE",

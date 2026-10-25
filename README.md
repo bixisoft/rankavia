@@ -2,15 +2,15 @@
 
 Free, GPL-2.0-or-later WordPress plugin by Bixisoft.
 
-**Development preview â€” plugin version 0.1.0; release v0.1.0-preview.1.** Test on a disposable copy before using it on a live site. This repository is public source distribution, not a WordPress.org listing or a stable compatibility certification.
+**Development preview — plugin version 0.1.0; release v0.1.0-preview.2.** Test on a disposable copy before using it on a live site. This repository is public source distribution, not a WordPress.org listing or a stable compatibility certification.
 
 Metadata and social tags, dashboard visibility guidance, sitemap/robots/crawler controls, optional llms.txt, basic JSON-LD, breadcrumbs, HTML sitemap, FAQ blocks and exact-path redirects. Yoast/Rank Math migration supports selected post/page fields in signed batches of 20, with preservation and conflict-aware undo; it is not whole-site migration.
 
 ## Download and install
 
-Download **rankavia.zip** from [the preview release](https://github.com/bixisoft/rankavia/releases/tag/v0.1.0-preview.1). Upload that asset through WordPress Plugins â†’ Add New â†’ Upload Plugin, then activate. The GitHub-generated source archives contain development material and are not the install ZIP. Keep a database and file backup, especially before migration or changing asset loading.
+Download **rankavia.zip** from [the preview release](https://github.com/bixisoft/rankavia/releases/tag/v0.1.0-preview.2). Upload that asset through WordPress Plugins → Add New → Upload Plugin, then activate. The GitHub-generated source archives contain development material and are not the install ZIP. Keep a database and file backup, especially before migration or changing asset loading.
 
-Runtime requirements declared by the plugin: WordPress 6.5+, PHP 7.4+. Existing local runtime evidence uses WordPress 7.1.3/PHP 8.2. Exact PHP 7.4 syntax passes; actual minimum-version runtime, multisite, themes/builders and real source-plugin migration matrices remain incomplete. New CI results are additional evidence, not a replacement for that acceptance. Read [VALIDATION.md](VALIDATION.md) for limits and hashes.
+Requires WordPress 6.5+ and PHP 7.4+. The exact runtime passed activation/coexistence and homepage checks on WordPress 6.5/PHP 7.4.33. Plugin Check 2.1 plugin_repo reported 0 errors and 34 warnings. Multisite, broad theme/builder acceptance and real source-plugin migration matrices remain incomplete. Read [VALIDATION.md](VALIDATION.md) for precise limits and hashes.
 
 ## Source and building
 

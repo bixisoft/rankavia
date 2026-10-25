@@ -1,3 +1,16 @@
+# Preview 2 validation
+
+Release tag: v0.1.0-preview.2. Plugin header version: 0.1.0. Development preview, not a WordPress.org listing or stable certification.
+
+Install ZIP SHA256: `1bba211c0a7d827febe9fd787ed459e57b8ad4678d3346420795c3c383521959`. Every packaged runtime byte is checked by release-manifest.json and tools/package.py.
+
+- Exact transformed ZIP: Plugin Check 2.1.0, plugin_repo: 0 errors, 34 warnings.
+- WordPress 6.5 / PHP 7.4.33: both free plugins active together, homepage HTTP200, no PHP errors. Rankavia shipped analyzer returned23 checks and flagged an NBSP-only link name. The transformed ZIPs preserve all tested executable bytes; added files are full GPL text and source-location notice.
+- Fresh prepared source includes editable PHP and bundled core; Rankavia also includes corresponding JavaScript/CSS and locked build instructions.
+- Multisite, broad themes/builders and real competitor-version matrices remain separate acceptance.
+
+## Prior preview evidence (historical)
+
 # Preview validation
 
 Release: v0.1.0-preview.1. Runtime version: 0.1.0. Public development preview; release asset is the manifest-verified install ZIP.

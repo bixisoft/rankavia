@@ -5,7 +5,7 @@
     "title": "Title tag present",
     "severity": "critical",
     "weight": 4,
-    "description": "Every page needs a <title>; it is the headline in search results."
+    "description": "A page title helps identify the page and may be used for its search-result title link."
   },
   {
     "id": "seo.title.length",
@@ -13,7 +13,7 @@
     "title": "Title length",
     "severity": "medium",
     "weight": 2,
-    "description": "Titles between 30 and 60 characters display fully in search results."
+    "description": "The 30–60 character range is an editing guide; search results may use different title text or truncate it."
   },
   {
     "id": "seo.title.unique",
@@ -37,7 +37,7 @@
     "title": "Meta description length",
     "severity": "low",
     "weight": 1,
-    "description": "Descriptions between 70 and 160 characters avoid truncation."
+    "description": "The 70–160 character range is an editing guide; search results may choose different text or truncate it."
   },
   {
     "id": "seo.description.unique",
@@ -85,7 +85,7 @@
     "title": "Mobile viewport",
     "severity": "critical",
     "weight": 4,
-    "description": "A responsive viewport meta tag is required for mobile-first indexing."
+    "description": "A device-width viewport tag supports responsive layout; this check does not establish mobile usability or indexing."
   },
   {
     "id": "seo.html.lang",
@@ -173,7 +173,7 @@
     "title": "Lazy-loaded images",
     "severity": "medium",
     "weight": 2,
-    "description": "Below-the-fold images should load lazily to protect LCP and bandwidth."
+    "description": "This check uses image order after the first two as a lazy-loading clue; confirm which images are actually offscreen before changing loading."
   },
   {
     "id": "speed.scripts.blocking",

@@ -137,11 +137,11 @@ final class Page_Analyzer {
 
 		$viewport = (string) $this->meta_content( $metas, 'name', 'viewport' );
 		if ( '' === $viewport ) {
-			$results[] = Result::fail( 'seo.viewport.present', __( 'No viewport meta tag; the page is not mobile-friendly.', 'rankavia' ) );
+			$results[] = Result::fail( 'seo.viewport.present', __( 'No viewport meta tag detected; verify the mobile layout.', 'rankavia' ) );
 		} elseif ( 1 !== preg_match( '/width\s*=\s*device-width/i', $viewport ) ) {
 			$results[] = Result::warn( 'seo.viewport.present', __( 'Viewport meta should include width=device-width.', 'rankavia' ), array( 'viewport' => $viewport ) );
 		} else {
-			$results[] = Result::pass( 'seo.viewport.present', __( 'Responsive viewport is set.', 'rankavia' ), array( 'viewport' => $viewport ) );
+			$results[] = Result::pass( 'seo.viewport.present', __( 'Viewport declares device width; verify the mobile layout.', 'rankavia' ), array( 'viewport' => $viewport ) );
 		}
 
 		$html_node = $this->first( $xpath, '/html' );
@@ -365,7 +365,7 @@ final class Page_Analyzer {
 			return Result::pass( $id, sprintf( __( '%1$s is %2$d characters.', 'rankavia' ), $label, $length ), $details );
 		}
 		/* translators: 1: field name, 2: character count, 3: minimum, 4: maximum. */
-		$message = sprintf( __( '%1$s is %2$d characters; aim for %3$d–%4$d.', 'rankavia' ), $label, $length, $min, $max );
+		$message = sprintf( __( '%1$s is %2$d characters; use %3$d–%4$d as an editing guide.', 'rankavia' ), $label, $length, $min, $max );
 		if ( $length >= $min - $tolerance && $length <= $max + $tolerance ) {
 			return Result::warn( $id, $message, $details );
 		}
@@ -435,7 +435,7 @@ final class Page_Analyzer {
 	}
 
 	/**
-	 * Lazy-loading of below-the-fold images (everything after the first two).
+	 * Image-order lazy-loading heuristic (everything after the first two).
 	 *
 	 * @param DOMElement[] $images All img elements.
 	 * @return Result
@@ -443,7 +443,7 @@ final class Page_Analyzer {
 	private function images_lazy_check( array $images ): Result {
 		$below_fold = array_slice( $images, 2 );
 		if ( empty( $below_fold ) ) {
-			return Result::info( 'speed.images.lazy', __( 'Too few images for lazy-loading to matter.', 'rankavia' ), array( 'total' => count( $images ) ) );
+			return Result::info( 'speed.images.lazy', __( 'Fewer than three images; image-order heuristic not applied.', 'rankavia' ), array( 'total' => count( $images ) ) );
 		}
 		$eager = 0;
 		foreach ( $below_fold as $image ) {
@@ -456,10 +456,10 @@ final class Page_Analyzer {
 			'eager' => $eager,
 		);
 		if ( $eager < 3 ) {
-			return Result::pass( 'speed.images.lazy', __( 'Below-the-fold images are lazy-loaded.', 'rankavia' ), $details );
+			return Result::pass( 'speed.images.lazy', __( 'Few images after the first two load eagerly; actual viewport position was not measured.', 'rankavia' ), $details );
 		}
 		/* translators: %d: number of eagerly loaded images. */
-		return Result::warn( 'speed.images.lazy', sprintf( __( '%d below-the-fold images load eagerly; add loading="lazy".', 'rankavia' ), $eager ), $details );
+		return Result::warn( 'speed.images.lazy', sprintf( __( '%d images after the first two load eagerly; check which are offscreen before adding loading="lazy".', 'rankavia' ), $eager ), $details );
 	}
 
 	/**

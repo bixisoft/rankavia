@@ -21,11 +21,11 @@ export const speedChecks: Check[] = [
     run(ctx) {
       const images = ctx.images;
       const belowFold = images.slice(2);
-      if (belowFold.length === 0) return info(this.id, 'Too few images for lazy-loading to matter.', { total: images.length });
+      if (belowFold.length === 0) return info(this.id, 'Fewer than three images; image-order heuristic not applied.', { total: images.length });
       const eager = belowFold.filter((img) => (attr(img, 'loading') ?? '').toLowerCase() !== 'lazy').length;
       const details = { total: images.length, eager };
-      if (eager < 3) return pass(this.id, 'Below-the-fold images are lazy-loaded.', details);
-      return warn(this.id, `${eager} below-the-fold images load eagerly; add loading="lazy".`, details);
+      if (eager < 3) return pass(this.id, 'Few images after the first two load eagerly; actual viewport position was not measured.', details);
+      return warn(this.id, `${eager} images after the first two load eagerly; check which are offscreen before adding loading="lazy".`, details);
     },
   },
   {

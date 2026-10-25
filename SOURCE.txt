@@ -2,7 +2,7 @@
 
 Rankavia code is GPL-2.0-or-later; see LICENSE. Composer retains its MIT notice.
 
-Editable PHP and the bundled shared core are included in this ZIP. The public source repository is https://github.com/bixisoft/rankavia/tree/v0.1.0-preview.2 .
+Editable PHP and the bundled shared core are included in this ZIP. The public source repository is https://github.com/bixisoft/rankavia/tree/v0.1.0-preview.3 .
 Editable JavaScript/CSS and build instructions are in _development/ and README.md in that tagged repository. Download its source archive alongside this install ZIP.
 
 This preview includes already-vendored dependencies. Do not run composer install in the installed plugin: its original development manifest uses monorepo-relative paths.

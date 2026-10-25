@@ -41,9 +41,9 @@ export const seoChecks: Check[] = [
         return pass(this.id, `Title is ${length} characters.`, { length });
       }
       if (length >= TITLE_MIN - 10 && length <= TITLE_MAX + 10) {
-        return warn(this.id, `Title is ${length} characters; aim for ${TITLE_MIN}–${TITLE_MAX}.`, { length });
+        return warn(this.id, `Title is ${length} characters; use ${TITLE_MIN}–${TITLE_MAX} as an editing guide.`, { length });
       }
-      return fail(this.id, `Title is ${length} characters; aim for ${TITLE_MIN}–${TITLE_MAX}.`, { length });
+      return fail(this.id, `Title is ${length} characters; use ${TITLE_MIN}–${TITLE_MAX} as an editing guide.`, { length });
     },
   },
   {
@@ -73,9 +73,9 @@ export const seoChecks: Check[] = [
         return pass(this.id, `Meta description is ${length} characters.`, { length });
       }
       if (length >= DESC_MIN - 20 && length <= DESC_MAX + 20) {
-        return warn(this.id, `Meta description is ${length} characters; aim for ${DESC_MIN}–${DESC_MAX}.`, { length });
+        return warn(this.id, `Meta description is ${length} characters; use ${DESC_MIN}–${DESC_MAX} as an editing guide.`, { length });
       }
-      return fail(this.id, `Meta description is ${length} characters; aim for ${DESC_MIN}–${DESC_MAX}.`, { length });
+      return fail(this.id, `Meta description is ${length} characters; use ${DESC_MIN}–${DESC_MAX} as an editing guide.`, { length });
     },
   },
   {
@@ -131,11 +131,11 @@ export const seoChecks: Check[] = [
     id: 'seo.viewport.present',
     run(ctx) {
       const viewport = metaContent(ctx, 'name', 'viewport') ?? '';
-      if (!viewport) return fail(this.id, 'No viewport meta tag; the page is not mobile-friendly.');
+      if (!viewport) return fail(this.id, 'No viewport meta tag detected; verify the mobile layout.');
       if (!/width\s*=\s*device-width/i.test(viewport)) {
         return warn(this.id, 'Viewport meta should include width=device-width.', { viewport });
       }
-      return pass(this.id, 'Responsive viewport is set.', { viewport });
+      return pass(this.id, 'Viewport declares device width; verify the mobile layout.', { viewport });
     },
   },
   {

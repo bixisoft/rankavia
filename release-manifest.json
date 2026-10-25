@@ -1,16 +1,15 @@
 {
   "slug": "rankavia",
-  "tag": "v0.1.0-preview.2",
+  "tag": "v0.1.0-preview.3",
   "pluginVersion": "0.1.0",
-  "status": "development preview; not WordPress.org listed",
-  "inputReviewedZipSha256": "668c85ab5acf54bf33f0d4e2f490a040c208492686ceee7de364e89f890749cf",
+  "status": "private preview3 candidate; not yet published",
   "packagingChanges": [
-    "Added GPL LICENSE",
-    "Added corresponding-source location/build notice"
+    "R43 educational wording in catalogue and analyzer messages",
+    "SOURCE.txt points to preview3 corresponding source"
   ],
   "runtimeFiles": {
     "LICENSE": "7a50ab8ca2c8ea67ad182d9ccda0797144ca8c485a74d37d69c42783cdf936a4",
-    "SOURCE.txt": "4c55cb2d362bd52ed9a7fd568956ef4ee0f3d92222589ac92b2020b39e0459ec",
+    "SOURCE.txt": "8735b9594e5f73be015acd9cf283e3b82e6a51e29b235810e4d959b588581f95",
     "assets/faq-editor.js": "8d2df3c6414cdea96e21fead9f237e502993ef6c5a3054e7e5705af48f6d2b40",
     "build/editor/index.asset.php": "c359c4b0bd4a57b90644470b1465aa49fad1e0f30fc35211194f35ccdf7ba59a",
     "build/editor/index.js": "4910e483d4748c5d281f5454115099ac3c28e2d47d54c7f778073ecc051cbf8f",
@@ -21,7 +20,7 @@
     "build/style-index-rtl.css": "5a11287b987c436bc47fdbe35ef3f860fda099897a6a0033b3b2b4f304a46a1b",
     "build/style-index.css": "7c2ec09eb428a520e2122fcdee7d57f53700b13251f15faa6dd2cdcc2277527e",
     "composer.json": "175970d90124d1a605d9554f08152bf2bac5e098c71eaa1a1c46fa37ceefdf49",
-    "data/checks.json": "e0729583d5c99d50d2878225556bb079e90f5545a72d24d7b4fb178c7db5c9e4",
+    "data/checks.json": "0f9c95cfeeecff28d4b304295d8d249730368c834dbfe7de7ac66a17b040645e",
     "rankavia.php": "5bea285295f67b53dd07fb9213c65d095be8593957913a813ea52c4415e495ca",
     "readme.txt": "92d7f04ab3c665f4548988eb140e01f5f71322d11e35d74332b6e7ff88233d2e",
     "src/Answers/Faq_Renderer.php": "c202034c2cafeef2d2761b044aab7e208271d93834641c6f42ae6c1c23859ea4",
@@ -53,7 +52,7 @@
     "src/Rest/Score_Controller.php": "3f2e9094323188a4c019a3eaea764a9048ed6b8fdbdccc856f482b0d1d4231b5",
     "src/Rest/Settings_Controller.php": "01f347995a89d6cd894a057f8805b91dae33f66d095cc17fe947d7746d2f9164",
     "src/Schema/Graph_Builder.php": "c6ddb581d438de8b668d5083b960958c8cd683a107c772f99c4ac4e9406a33ac",
-    "src/Score/Page_Analyzer.php": "7a13d0c9a1528cc6327b3d9a56a17a428a4457427968e9227fa739520d38d2b9",
+    "src/Score/Page_Analyzer.php": "a7d13f4f6e709fb33e8827630659bbf700816146c27bdf408f2b885ed727ef16",
     "src/Settings/Schema_Factory.php": "e5d3026e5ee387ff91db0cde2d153822409e3e8e58815de3e5d023d580f667e9",
     "src/Sitemaps/Html_Renderer.php": "e2f95d6f84cc22b30639268c3f8dc796c72952fa0b353ef752740953ebe0464b",
     "src/Templates/Contexts.php": "f9bc186ad7615f230861020b3d5ee9a21f0bf3ae0e66c7f18ba615f5032973df",
@@ -164,6 +163,6 @@
     "vendor/composer/platform_check.php": "efa64a484ec52731dd6445e314eed10d2c8f6a23286624a3535c4966076ac6c2",
     "vitest.config.js": "3acbaf20e5b188b993ec3d79ce46d79281dffe0c176cefa02dd64c0ab1d28dab"
   },
-  "artifactSha256": "39cb01f582757584853c4ae40cbb119487624eabd049dd45a12731aad5bc08d4",
-  "reviewedFileIdenticalZipSha256": "1bba211c0a7d827febe9fd787ed459e57b8ad4678d3346420795c3c383521959"
+  "artifactSha256": "2b80b75aa72368c7c6b3a2cf9461ac74ce365795f51ef900eb52ec5ee01e92ac",
+  "predecessorPreview2Sha256": "39cb01f582757584853c4ae40cbb119487624eabd049dd45a12731aad5bc08d4"
 }

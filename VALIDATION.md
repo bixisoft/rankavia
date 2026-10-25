@@ -1,4 +1,12 @@
-# Preview 2 validation
+# Preview 3 validation — local release candidate
+
+Release target: `v0.1.0-preview.3`. Plugin header: `0.1.0`. This document describes a private local candidate until the tag, asset and public CI are published and verified.
+
+The change from published preview2 is confined to educational wording in both JSON catalogues, the TypeScript scorer messages and the PHP page-analyzer messages. IDs, predicates, statuses, weights and character bands are unchanged. `SOURCE.txt` now points to the intended preview3 source tag. All other runtime files remain byte-identical to published preview2. The local candidate package and release manifest enforce exact content and archive hashes; candidate ZIP SHA256: `2b80b75aa72368c7c6b3a2cf9461ac74ce365795f51ef900eb52ec5ee01e92ac`. The corresponding Plugin Check result is recorded in the candidate receipt.
+
+The candidate was checked on local WordPress 6.5/PHP 7.4.33 with Plugin Check 2.1.0 `plugin_repo`: exit 0, 0 errors and 34 existing migration SQL warnings (18 direct queries and 16 uncached queries). Changed PHP syntax passed. R43 private-source typecheck and targeted scorer tests passed; unchanged runtime/floor evidence from preview2 is reused. No new customer install, real source-plugin migration matrix, multisite or broad theme/builder acceptance was performed.
+
+## Preview 2 validation (published baseline)
 
 Release tag: v0.1.0-preview.2. Plugin header: 0.1.0. Development preview, not WordPress.org listed or stable certification.
 

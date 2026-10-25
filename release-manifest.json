@@ -163,5 +163,7 @@
     "vendor/composer/installed.php": "60a37120bd13209e6bbe4257373eef83d3e7dfcce8d5de0ae8eafa59e08e82c0",
     "vendor/composer/platform_check.php": "efa64a484ec52731dd6445e314eed10d2c8f6a23286624a3535c4966076ac6c2",
     "vitest.config.js": "3acbaf20e5b188b993ec3d79ce46d79281dffe0c176cefa02dd64c0ab1d28dab"
-  }
+  },
+  "artifactSha256": "39cb01f582757584853c4ae40cbb119487624eabd049dd45a12731aad5bc08d4",
+  "reviewedFileIdenticalZipSha256": "1bba211c0a7d827febe9fd787ed459e57b8ad4678d3346420795c3c383521959"
 }

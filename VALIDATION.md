@@ -1,13 +1,14 @@
 # Preview 2 validation
 
-Release tag: v0.1.0-preview.2. Plugin header version: 0.1.0. Development preview, not a WordPress.org listing or stable certification.
+Release tag: v0.1.0-preview.2. Plugin header: 0.1.0. Development preview, not WordPress.org listed or stable certification.
 
-Install ZIP SHA256: `1bba211c0a7d827febe9fd787ed459e57b8ad4678d3346420795c3c383521959`. Every packaged runtime byte is checked by release-manifest.json and tools/package.py.
+Normalized install ZIP SHA256: `39cb01f582757584853c4ae40cbb119487624eabd049dd45a12731aad5bc08d4`. tools/package.py reconstructs it with stored entries and fixed metadata, then enforces artifactSha256 and every runtime file hash.
 
-- Exact transformed ZIP: Plugin Check 2.1.0, plugin_repo: 0 errors, 34 warnings.
-- WordPress 6.5 / PHP 7.4.33: both free plugins active together, homepage HTTP200, no PHP errors. Rankavia shipped analyzer returned23 checks and flagged an NBSP-only link name. The transformed ZIPs preserve all tested executable bytes; added files are full GPL text and source-location notice.
-- Fresh prepared source includes editable PHP and bundled core; Rankavia also includes corresponding JavaScript/CSS and locked build instructions.
-- Multisite, broad themes/builders and real competitor-version matrices remain separate acceptance.
+Reviewed file-identical ZIP: `1bba211c0a7d827febe9fd787ed459e57b8ad4678d3346420795c3c383521959`. It used DEFLATE and different ZIP timestamps; that packaging metadata is normalized for cross-platform byte reproduction. The executable/content bytes are identical.
+
+- Exact predecessor Plugin Check 2.1.0 plugin_repo: 0 errors, 34 warnings. Repository CI separately packages/checks the normalized artifact.
+- WordPress6.5/PHP7.4.33 executable acceptance: both free plugins active, homepageHTTP200, no PHP errors; Rankavia analyzer23 and NBSP-only link warning passed.
+- Multisite, broad themes/builders and real competitor-version matrices remain open.
 
 ## Prior preview evidence (historical)
 

@@ -38,7 +38,11 @@ export function Dashboard( { config } ) {
 
 	return (
 		<Page
-			title={ __( 'Visibility Score', 'rankavia' ) }
+			title={ __( 'Home page Visibility Score', 'rankavia' ) }
+			description={ __(
+				'This score checks your home page only. Other pages are not included yet, so treat it as a first check, not a verdict on the whole site.',
+				'rankavia'
+			) }
 			actions={
 				<Button
 					variant="secondary"

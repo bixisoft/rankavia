@@ -1,3 +1,36 @@
+# Preview 4 validation
+
+Release tag: `v0.1.0-preview.4`. Plugin header: `0.1.0`. Development preview, not WordPress.org listed or stable certification.
+
+Install ZIP SHA256: `d9cdc0f4a84713a4e0ebe0b201e641cce7b12fe52ec27056e8a0e0c7491ad96f`. `python tools/package.py` rebuilds it byte-for-byte from `release-manifest.json`.
+
+## What changed
+
+- The block editor SEO sidebar no longer overflows or scrolls sideways.
+- Title and description previews use the site's own name and tagline instead of sample text.
+- Redirects, SEO migration and Speed open inside the shared Rankavia header, and the navigation lists every screen.
+- The dashboard says the Visibility Score covers the home page only.
+- Keyword density in the editor is shown as context, never pass/warn/fail, and no longer counts toward the editor score.
+- readme.txt has the fuller External services disclosure, and the check catalogue carries its newer priority fields.
+
+## How it was built
+
+Runtime PHP, data and readme come from bixisoft-plugins main `feb0847f`. The shared core is prefixed into the plugin namespace exactly as `tools/prefix-core.php` does. `vendor/` (bundled core and Composer maps) is unchanged from `v0.1.0-preview.3`: the shared core has no changes on main, and no runtime class was added or removed. The admin `build/` was rebuilt with `@wordpress/scripts` from the same main commit.
+
+## Checks run
+
+- PHP syntax (`php -l`, PHP 8.0) on every packaged PHP file; no residual unprefixed core namespace; every Composer classmap target present.
+- Admin JavaScript unit tests (Vitest) for the plugin and the shared admin UI passed in the source repository.
+- The exact install ZIP contents, with no development autoloader, activated on WordPress 7.1.4/PHP 7.4 (Playground) together with the other free plugin, without PHP errors or warnings. Front page HTTP 200 with title, description, Open Graph, Twitter card and JSON-LD output; robots.txt and the XML sitemap served.
+- Admin screens open in the shared header with all nine navigation entries.
+
+## Not run for this preview
+
+- Plugin Check, PHPUnit, PHPCS and PHPStan (no Composer on the build machine; this repository's CI is disabled).
+- A fresh `npm ci` build comparison of `_development/` against `build/`; `_development/packages/scorer` is unchanged from the previous preview because the plugin does not use it.
+- The dashboard home-page score on the test site: its self-request timed out under machine load. That code is unchanged from the previous preview.
+- Multisite, broad theme/builder and real competitor-version matrices remain open.
+
 # Preview 3 validation — local release candidate
 
 Release target: `v0.1.0-preview.3`. Plugin header: `0.1.0`. This document describes a private local candidate until the tag, asset and public CI are published and verified.

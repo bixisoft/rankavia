@@ -313,35 +313,12 @@ export function analyse( {
 		containsPhrase( lines[ 0 ] ?? '', phrase ) ||
 		containsPhrase( introWords.join( ' ' ), phrase );
 
-	// Density: occurrences per 100 words, rounded to two places so the boundaries are stable.
+	// Density: occurrences per 100 words. Shown as context only: there is no ideal percentage, so it
+	// never passes, warns or fails and stays out of the score.
 	const occurrences = occurrencesOf( words, phrase.split( ' ' ) );
 	const density = words.length
 		? Math.round( ( occurrences * 10000 ) / words.length ) / 100
 		: 0;
-	let densityStatus = 'pass';
-	if ( density > 3 ) {
-		densityStatus = 'fail';
-	} else if ( density < 0.5 || density > 2.5 ) {
-		densityStatus = 'warn';
-	}
-	let densityAdvice = __( 'This is in the recommended range.', 'rankavia' );
-	if ( densityStatus === 'fail' ) {
-		densityAdvice = __(
-			'The keyword is overused and reads as keyword stuffing.',
-			'rankavia'
-		);
-	} else if ( density < 0.5 ) {
-		densityAdvice = __(
-			'Use the keyword more often (aim for 0.5% to 2.5%).',
-			'rankavia'
-		);
-	} else if ( density > 2.5 ) {
-		densityAdvice = __(
-			'Use the keyword a little less often (aim for 0.5% to 2.5%).',
-			'rankavia'
-		);
-	}
-
 	const titleLength = Array.from( squash( title ) ).length;
 	const descriptionLength = Array.from( squash( description ) ).length;
 
@@ -441,14 +418,19 @@ export function analyse( {
 		),
 		check(
 			'keyword-density',
-			densityStatus,
-			__( 'Keyword density', 'rankavia' ),
+			'info',
+			__( 'Keyword use', 'rankavia' ),
 			sprintf(
-				/* translators: 1: density as a percentage, 2: number of occurrences, 3: advice. */
-				__( '%1$s%% (%2$d times). %3$s', 'rankavia' ),
-				density,
+				/* translators: 1: number of occurrences, 2: number of words, 3: density as a percentage. */
+				_n(
+					'Used %1$d time in %2$d words (%3$s%%). For context only: there is no ideal percentage.',
+					'Used %1$d times in %2$d words (%3$s%%). For context only: there is no ideal percentage.',
+					occurrences,
+					'rankavia'
+				),
 				occurrences,
-				densityAdvice
+				words.length,
+				density
 			)
 		),
 		binary(

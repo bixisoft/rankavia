@@ -24,7 +24,9 @@ The SEO migration submenu provides a read-only preview, explicit apply and confl
 
 == External services ==
 
-The Visibility Score fetches your own site's home page over HTTP (from your server to your server) to analyse the HTML. Nothing is sent to Bixisoft or any third party. No analytics or tracking is included.
+The current Visibility Score fetches your own site's home page over HTTP from your WordPress server and analyses the HTML locally. It does not send that page, score or visitor data to Rankavia or a third-party analysis service. The dashboard computes the score when opened and caches it locally for ten minutes. You can choose not to open the dashboard. No analytics or tracking is included by this plugin.
+
+A future Rankavia scanner-client connection is planned, not active in this plugin. Before enabling it, this section must identify the service, data sent, purpose, retention and user controls.
 
 == Installation ==
 

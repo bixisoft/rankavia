@@ -49,6 +49,107 @@ final class Admin_Module implements Module {
 		unset( $container );
 		add_action( 'admin_menu', array( $this, 'register_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
+		add_action( 'rankavia_admin_shell_open', array( $this, 'shell_open' ), 10, 2 );
+		add_action( 'rankavia_admin_shell_close', array( $this, 'shell_close' ) );
+	}
+
+	/**
+	 * Plain PHP pages that sit beside the app screens (Redirects, SEO migration, Speed). They are listed in the
+	 * shared navigation and wrapped in the same header through the rankavia_admin_shell_open/close actions.
+	 *
+	 * @return array<int, array{id: string, title: string, slug: string, capability: string, order: int}>
+	 */
+	public function links(): array {
+		/**
+		 * Filters the plain admin pages shown in the Rankavia navigation.
+		 *
+		 * @param array<int, array<string, mixed>> $links Links: id, title, slug (admin page slug), capability, order.
+		 */
+		$filtered = apply_filters( 'rankavia_admin_nav_links', array() );
+
+		$clean = array();
+		foreach ( is_array( $filtered ) ? $filtered : array() as $link ) {
+			if ( ! is_array( $link ) || ! isset( $link['id'], $link['slug'] ) || ! is_string( $link['id'] ) || ! is_string( $link['slug'] ) || '' === $link['id'] || '' === $link['slug'] ) {
+				continue;
+			}
+			$clean[ $link['id'] ] = array(
+				'id'         => $link['id'],
+				'title'      => isset( $link['title'] ) ? (string) $link['title'] : $link['id'],
+				'slug'       => sanitize_key( $link['slug'] ),
+				'capability' => isset( $link['capability'] ) ? (string) $link['capability'] : 'manage_options',
+				'order'      => isset( $link['order'] ) ? (int) $link['order'] : 100,
+			);
+		}
+		return array_values( $clean );
+	}
+
+	/**
+	 * Every navigation entry the current user may open, in order: app screens and plain pages together.
+	 *
+	 * @return array<int, array{id: string, title: string, url: string, order: int}>
+	 */
+	public function navigation(): array {
+		$items = array();
+		foreach ( $this->screens() as $screen ) {
+			if ( current_user_can( $screen['capability'] ) ) {
+				$items[] = array(
+					'id'    => $screen['id'],
+					'title' => $screen['title'],
+					'url'   => admin_url( 'admin.php?page=' . $this->slug( $screen['id'] ) ),
+					'order' => $screen['order'],
+				);
+			}
+		}
+		foreach ( $this->links() as $link ) {
+			if ( current_user_can( $link['capability'] ) ) {
+				$items[] = array(
+					'id'    => $link['id'],
+					'title' => $link['title'],
+					'url'   => admin_url( 'admin.php?page=' . $link['slug'] ),
+					'order' => $link['order'],
+				);
+			}
+		}
+		usort(
+			$items,
+			static function ( array $a, array $b ): int {
+				return $a['order'] <=> $b['order'];
+			}
+		);
+		return $items;
+	}
+
+	/**
+	 * Open the shared shell on a plain PHP page: the same header and navigation as the app, then a titled card.
+	 *
+	 * @param mixed $current Id of the current navigation entry.
+	 * @param mixed $title   Page title.
+	 * @return void
+	 */
+	public function shell_open( $current, $title ): void {
+		$current = is_string( $current ) ? $current : '';
+		echo '<div class="wrap rankavia-wrap"><h1>' . esc_html__( 'Rankavia', 'rankavia' ) . '</h1>';
+		echo '<div class="bx-app"><header class="bx-shell__header"><div class="bx-shell__brand">';
+		echo '<span class="bx-shell__mark" aria-hidden="true">R</span><span class="bx-shell__name">' . esc_html__( 'Rankavia', 'rankavia' ) . '</span>';
+		/* translators: %s: plugin version. */
+		echo '<span class="bx-shell__version">' . esc_html( sprintf( __( 'Version %s', 'rankavia' ), RANKAVIA_VERSION ) ) . '</span></div>';
+		echo '<nav class="bx-shell__nav" aria-label="' . esc_attr__( 'Rankavia sections', 'rankavia' ) . '"><ul>';
+		foreach ( $this->navigation() as $item ) {
+			$is_current = $item['id'] === $current;
+			echo '<li><a href="' . esc_url( $item['url'] ) . '"' . ( $is_current ? ' class="is-current" aria-current="page"' : '' ) . '>' . esc_html( $item['title'] ) . '</a></li>';
+		}
+		echo '</ul></nav></header><main class="bx-shell__content"><div class="bx-page"><div class="bx-page__header"><div class="bx-page__heading">';
+		echo '<h2 class="bx-page__title">' . esc_html( is_string( $title ) ? $title : '' ) . '</h2></div></div>';
+		echo '<section class="bx-card"><div class="bx-card__body bx-plain">';
+	}
+
+	/**
+	 * Close what shell_open() opened.
+	 *
+	 * @return void
+	 */
+	public function shell_close(): void {
+		echo '</div></section></div></main></div></div>';
 	}
 
 	/**
@@ -191,6 +292,12 @@ final class Admin_Module implements Module {
 		$screens = $this->screens();
 		$current = $this->screen_id_for_hook( $hook_suffix, $screens );
 		if ( '' === $current ) {
+			// Plain pages in the shared shell need the stylesheet only, never the app script.
+			foreach ( $this->links() as $link ) {
+				if ( 1 === preg_match( '/(?:^|_page_)' . preg_quote( $link['slug'], '/' ) . '$/', $hook_suffix ) && file_exists( RANKAVIA_PATH . 'build/style-index.css' ) ) {
+					wp_enqueue_style( 'rankavia-admin', RANKAVIA_URL . 'build/style-index.css', array(), RANKAVIA_VERSION );
+				}
+			}
 			return;
 		}
 
@@ -243,6 +350,7 @@ final class Admin_Module implements Module {
 					'restNamespace'     => 'rankavia/v1',
 					'siteName'          => (string) get_bloginfo( 'name' ),
 					'screens'           => $config_screens,
+					'navigation'        => $this->navigation(),
 					'currentScreen'     => $current,
 					'templateVariables' => Variables::samples(),
 				)

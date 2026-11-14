@@ -5,7 +5,10 @@
     "title": "Title tag present",
     "severity": "critical",
     "weight": 4,
-    "description": "A page title helps identify the page and may be used for its search-result title link."
+    "description": "A page title helps identify the page and may be used for its search-result title link.",
+    "priority": "now",
+    "priority_reason": "A missing title leaves the page without its primary short label.",
+    "title_template": "{value}; the title identifies this page in browser tabs and search results."
   },
   {
     "id": "seo.title.length",
@@ -13,7 +16,10 @@
     "title": "Title length",
     "severity": "medium",
     "weight": 2,
-    "description": "The 30–60 character range is an editing guide; search results may use different title text or truncate it."
+    "description": "The 30–60 character range is an editing guide; search results may use different title text or truncate it.",
+    "priority": "optional",
+    "priority_reason": "This is editorial guidance, not a proven search ranking cutoff.",
+    "title_template": "{value}; a very short or long title may omit context or display awkwardly."
   },
   {
     "id": "seo.title.unique",
@@ -21,7 +27,10 @@
     "title": "Unique title declaration",
     "severity": "low",
     "weight": 1,
-    "description": "Multiple title declarations can give crawlers conflicting page titles."
+    "description": "Multiple title declarations can give crawlers conflicting page titles.",
+    "priority": "optional",
+    "priority_reason": "This is a markup cleanup after a usable title exists.",
+    "title_template": "{value}; multiple title elements can make the page label ambiguous."
   },
   {
     "id": "seo.description.present",
@@ -29,7 +38,10 @@
     "title": "Meta description present",
     "severity": "high",
     "weight": 3,
-    "description": "A meta description gives search and answer engines a summary to show."
+    "description": "A meta description gives search and answer engines a summary to show.",
+    "priority": "worth",
+    "priority_reason": "This improves the page summary without asserting that search engines will always display it.",
+    "title_template": "{value}; a description can help people understand the page before opening it."
   },
   {
     "id": "seo.description.length",
@@ -37,7 +49,10 @@
     "title": "Meta description length",
     "severity": "low",
     "weight": 1,
-    "description": "The 70–160 character range is an editing guide; search results may choose different text or truncate it."
+    "description": "The 70–160 character range is an editing guide; search results may choose different text or truncate it.",
+    "priority": "optional",
+    "priority_reason": "Description length is an editorial check rather than a ranking guarantee.",
+    "title_template": "{value}; a very short or long summary may be less useful to readers."
   },
   {
     "id": "seo.description.unique",
@@ -45,7 +60,10 @@
     "title": "Unique meta description declaration",
     "severity": "low",
     "weight": 1,
-    "description": "Multiple meta descriptions can give crawlers conflicting summaries."
+    "description": "Multiple meta descriptions can give crawlers conflicting summaries.",
+    "priority": "optional",
+    "priority_reason": "This is a markup cleanup after a useful description exists.",
+    "title_template": "{value}; multiple descriptions can compete with each other."
   },
   {
     "id": "seo.canonical.present",
@@ -53,7 +71,10 @@
     "title": "Canonical URL",
     "severity": "high",
     "weight": 3,
-    "description": "An absolute canonical link prevents duplicate-content dilution."
+    "description": "An absolute canonical link prevents duplicate-content dilution.",
+    "priority": "now",
+    "priority_reason": "An absent canonical leaves duplicate URL preference less explicit.",
+    "title_template": "{value}; a canonical link helps consolidate duplicate URL variants."
   },
   {
     "id": "seo.canonical.unique",
@@ -61,15 +82,22 @@
     "title": "Unique canonical declaration",
     "severity": "low",
     "weight": 1,
-    "description": "Multiple canonical links can give crawlers conflicting URL preferences."
+    "description": "Multiple canonical links can give crawlers conflicting URL preferences.",
+    "priority": "optional",
+    "priority_reason": "A single coherent declaration is easier to interpret.",
+    "title_template": "{value}; several canonical links can give conflicting preferred URLs."
   },
   {
     "id": "seo.links.named",
+    "keyword_review_policy": "Optional Amendment 16 owner heuristic: 50% or more generic link/button text blocks is a review cue. Existing baseline failures survive. Prominence = count + 2 * (title 4, H1 3, description 2, headings 2, URL 1, alt 1 for present locations). There is no ideal density percentage.",
     "category": "seo",
     "title": "Named links",
     "severity": "medium",
     "weight": 2,
-    "description": "Links with href need detectable source text, an aria-label, or image alt text."
+    "description": "Links with href need detectable source text, an aria-label, or image alt text.",
+    "priority": "worth",
+    "priority_reason": "Unclear links make navigation harder for people and assistive technology.",
+    "title_template": "{value}; clear links help people decide where to go next."
   },
   {
     "id": "seo.h1.single",
@@ -77,7 +105,10 @@
     "title": "Single H1",
     "severity": "high",
     "weight": 3,
-    "description": "One H1 states the page topic for crawlers and assistive tech."
+    "description": "One H1 states the page topic for crawlers and assistive tech.",
+    "priority": "worth",
+    "priority_reason": "A clear primary heading improves page orientation.",
+    "title_template": "{value}; the main heading helps readers identify the page subject."
   },
   {
     "id": "seo.viewport.present",
@@ -85,7 +116,10 @@
     "title": "Mobile viewport",
     "severity": "critical",
     "weight": 4,
-    "description": "A device-width viewport tag supports responsive layout; this check does not establish mobile usability or indexing."
+    "description": "A device-width viewport tag supports responsive layout; this check does not establish mobile usability or indexing.",
+    "priority": "now",
+    "priority_reason": "Without it, mobile browsers may render a desktop-width layout.",
+    "title_template": "{value}; a viewport declaration lets the layout use the device width."
   },
   {
     "id": "seo.html.lang",
@@ -93,7 +127,10 @@
     "title": "Language declared",
     "severity": "medium",
     "weight": 2,
-    "description": "The html lang attribute tells engines and screen readers the content language."
+    "description": "The html lang attribute tells engines and screen readers the content language.",
+    "priority": "worth",
+    "priority_reason": "Language information improves reading and pronunciation support.",
+    "title_template": "{value}; the language helps browsers and assistive technology interpret text."
   },
   {
     "id": "seo.images.alt",
@@ -101,7 +138,10 @@
     "title": "Image alt text",
     "severity": "medium",
     "weight": 2,
-    "description": "Alt attributes make images indexable and accessible."
+    "description": "Alt attributes make images indexable and accessible.",
+    "priority": "worth",
+    "priority_reason": "Missing alternatives can exclude readers who use assistive technology.",
+    "title_template": "{value}; alternative text explains informative images when they cannot be seen."
   },
   {
     "id": "seo.og.basic",
@@ -109,7 +149,10 @@
     "title": "Open Graph tags",
     "severity": "medium",
     "weight": 2,
-    "description": "og:title, og:description and og:image control how the page is shared."
+    "description": "og:title, og:description and og:image control how the page is shared.",
+    "priority": "optional",
+    "priority_reason": "Preview polish is useful but does not prove search ranking or sharing uptake.",
+    "title_template": "{value}; sharing metadata controls how the page may appear when linked on social platforms."
   },
   {
     "id": "seo.robots.indexable",
@@ -117,7 +160,10 @@
     "title": "Indexable",
     "severity": "critical",
     "weight": 4,
-    "description": "A noindex directive removes the page from search and AI answers."
+    "description": "A noindex directive removes the page from search and AI answers.",
+    "priority": "now",
+    "priority_reason": "An unintended noindex directly conflicts with intended search discovery.",
+    "title_template": "{value}; a noindex directive can keep a public page out of search results."
   },
   {
     "id": "seo.jsonld.valid",
@@ -125,7 +171,10 @@
     "title": "Valid JSON-LD",
     "severity": "high",
     "weight": 3,
-    "description": "Structured data must parse to be used for rich results and AI grounding."
+    "description": "Structured data must parse to be used for rich results and AI grounding.",
+    "priority": "worth",
+    "priority_reason": "The parser must understand a declaration before its meaning can be evaluated.",
+    "title_template": "{value}; invalid JSON-LD cannot be parsed as intended."
   },
   {
     "id": "aeo.headings.questions",
@@ -133,7 +182,10 @@
     "title": "Question headings",
     "severity": "medium",
     "weight": 2,
-    "description": "Headings phrased as questions match how people ask answer engines."
+    "description": "Headings phrased as questions match how people ask answer engines.",
+    "priority": "worth",
+    "priority_reason": "Useful question headings depend on the topic, so local counts are editing cues only.",
+    "title_template": "{value}; a direct question heading can make an answer easier to locate."
   },
   {
     "id": "aeo.author.schema",
@@ -141,7 +193,10 @@
     "title": "Author markup",
     "severity": "high",
     "weight": 3,
-    "description": "Author and Person structured data carry E-E-A-T signals that answer engines weigh."
+    "description": "Author and Person structured data carry E-E-A-T signals that answer engines weigh.",
+    "priority": "worth",
+    "priority_reason": "Attribution matters for authored content but must reflect a real person or organization.",
+    "title_template": "{value}; a clear author declaration attributes article content to its source."
   },
   {
     "id": "geo.semantic.article",
@@ -149,7 +204,10 @@
     "title": "Semantic content wrapper",
     "severity": "medium",
     "weight": 2,
-    "description": "<article> or <main> lets generative engines isolate the primary content."
+    "description": "<article> or <main> lets generative engines isolate the primary content.",
+    "priority": "worth",
+    "priority_reason": "A structural correction is useful, but a wrapper alone does not establish content quality.",
+    "title_template": "{value}; semantic page regions help readers and assistive technology locate the primary material."
   },
   {
     "id": "geo.updated.date",
@@ -157,7 +215,10 @@
     "title": "Modified date",
     "severity": "high",
     "weight": 3,
-    "description": "AI-cited pages are fresher on average; expose a machine-readable modified date."
+    "description": "AI-cited pages are fresher on average; expose a machine-readable modified date.",
+    "priority": "worth",
+    "priority_reason": "Dates should be accurate; absence is not a reason to fabricate an update.",
+    "title_template": "{value}; a genuine date gives readers context about when the content changed."
   },
   {
     "id": "speed.images.dimensions",
@@ -165,7 +226,10 @@
     "title": "Image dimensions",
     "severity": "high",
     "weight": 3,
-    "description": "Width and height attributes reserve space and prevent layout shift (CLS)."
+    "description": "Width and height attributes reserve space and prevent layout shift (CLS).",
+    "priority": "worth",
+    "priority_reason": "Unexpected layout movement affects reading and interaction.",
+    "title_template": "{value}; image dimensions help the browser avoid layout shifts as images load."
   },
   {
     "id": "speed.images.lazy",
@@ -173,7 +237,10 @@
     "title": "Lazy-loaded images",
     "severity": "medium",
     "weight": 2,
-    "description": "This check uses image order after the first two as a lazy-loading clue; confirm which images are actually offscreen before changing loading."
+    "description": "This check uses image order after the first two as a lazy-loading clue; confirm which images are actually offscreen before changing loading.",
+    "priority": "optional",
+    "priority_reason": "The producer uses image order as a heuristic and does not know the viewport.",
+    "title_template": "{value}; loading hints can defer images that are not needed immediately."
   },
   {
     "id": "speed.scripts.blocking",
@@ -181,6 +248,9 @@
     "title": "Render-blocking scripts",
     "severity": "high",
     "weight": 3,
-    "description": "Scripts in <head> without defer/async delay first paint and raise TBT."
+    "description": "Scripts in <head> without defer/async delay first paint and raise TBT.",
+    "priority": "worth",
+    "priority_reason": "Blocking work can slow the page, but this source check does not measure load time.",
+    "title_template": "{value}; scripts loaded before content can delay the first usable page."
   }
 ]

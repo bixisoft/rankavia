@@ -630,3 +630,36 @@ body.folded .bx-snackbars {
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
 }
+
+/* Plain PHP pages (Redirects, SEO migration, Speed) inside the shared shell. */
+.bx-plain > :first-child {
+	margin-top: 0;
+}
+
+.bx-plain > :last-child,
+.bx-plain form > p.submit:last-child {
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+
+.bx-plain h2 {
+	margin: 24px 0 8px;
+	font-size: 16px;
+}
+
+.bx-plain form > h2:first-of-type {
+	margin-top: 0;
+}
+
+.bx-plain .form-table th {
+	width: 240px;
+	font-weight: 500;
+}
+
+.bx-plain .notice.inline {
+	margin: 0 0 16px;
+}
+
+.bx-plain .widefat {
+	border-color: var( --bx-border );
+}

@@ -35,6 +35,24 @@ final class Migration_Module implements Module {
 	public function boot( Container $container ): void {
 		unset( $container );
 		add_action( 'admin_menu', array( $this, 'menu' ), 20 );
+		add_filter( 'rankavia_admin_nav_links', array( $this, 'nav_link' ) );
+	}
+
+	/**
+	 * List this page in the shared Rankavia navigation.
+	 *
+	 * @param mixed $links Links collected so far.
+	 * @return array<int, mixed>
+	 */
+	public function nav_link( $links ): array {
+		$links   = is_array( $links ) ? array_values( $links ) : array();
+		$links[] = array(
+			'id'    => 'migration',
+			'title' => __( 'SEO migration', 'rankavia' ),
+			'slug'  => 'rankavia-migration',
+			'order' => 45,
+		);
+		return $links;
 	}
 	/** Add the migration screen beneath the Rankavia menu.
 	 *
@@ -113,13 +131,13 @@ final class Migration_Module implements Module {
 		} catch ( \RuntimeException $failure ) {
 			$error = $failure->getMessage();
 		}
-		echo '<div class="wrap"><h1>' . esc_html__( 'Yoast and Rank Math migration', 'rankavia' ) . '</h1>';
+		do_action( 'rankavia_admin_shell_open', 'migration', __( 'Yoast and Rank Math migration', 'rankavia' ) );
 		echo '<p>' . esc_html__( 'Preview supported post/page metadata, then explicitly apply. Existing Rankavia fields and all source data are preserved. Each batch supports up to 20 posts/pages. Back up your database first.', 'rankavia' ) . '</p>';
 		echo '<p>' . esc_html__( 'This does not migrate global settings, taxonomy metadata, redirects, custom schema, scores, advanced robots or remote images. Unsupported fields and template variables are skipped with warnings. Source plugins are not deactivated; review duplicate output before switching plugins.', 'rankavia' ) . '</p>';
 		if ( '' !== $error ) {
-			echo '<div class="notice notice-error"><p>' . esc_html( $error ) . '</p></div>'; }
+			echo '<div class="notice notice-error inline"><p>' . esc_html( $error ) . '</p></div>'; }
 		if ( '' !== $message ) {
-			echo '<div class="notice notice-success"><p>' . esc_html( $message ) . '</p></div>'; }
+			echo '<div class="notice notice-success inline"><p>' . esc_html( $message ) . '</p></div>'; }
 		echo '<form method="post">';
 		wp_nonce_field( 'rankavia_migration' );
 		echo '<input type="hidden" name="migration_action" value="preview" /><p><label>' . esc_html__( 'Source', 'rankavia' ) . ' <select name="provider"><option value="yoast"' . selected( $provider, 'yoast', false ) . '>Yoast SEO</option><option value="rankmath"' . selected( $provider, 'rankmath', false ) . '>Rank Math</option></select></label></p>';
@@ -153,6 +171,6 @@ final class Migration_Module implements Module {
 				echo '</form>';
 			}
 		}
-		echo '</div>';
+		do_action( 'rankavia_admin_shell_close' );
 	}
 }

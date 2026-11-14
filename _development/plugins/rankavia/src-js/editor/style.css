@@ -13,13 +13,25 @@
 	--bx-border: #dcdcde;
 	--bx-none: #c3c2b7;
 	display: grid;
+	/* minmax( 0, … ) lets the column shrink to the sidebar; a bare track grows to the longest unbroken line. */
+	grid-template-columns: minmax( 0, 1fr );
 	gap: 16px;
 	font-family: inherit;
 	color: var( --bx-ink );
 }
 
+.rk-editor.bx-app > * {
+	min-width: 0;
+}
+
 .rk-editor .bx-serp {
 	max-width: none;
+	min-width: 0;
+}
+
+.rk-editor .bx-template__preview code,
+.rk-editor .bx-serp__name {
+	overflow-wrap: anywhere;
 }
 
 .rk-editor__field {

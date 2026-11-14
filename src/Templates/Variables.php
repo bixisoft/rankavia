@@ -129,10 +129,14 @@ final class Variables {
 	 * @return array<int, array{name: string, label: string, sample: string}>
 	 */
 	public static function samples(): array {
+		// The site's own name and tagline, so previews read like this site; the stand-ins only cover a blank setting.
+		$site_name = trim( wp_strip_all_tags( (string) get_bloginfo( 'name' ) ) );
+		$tagline   = trim( wp_strip_all_tags( (string) get_bloginfo( 'description' ) ) );
+
 		return array(
 			self::sample( 'title', __( 'Title', 'rankavia' ), 'How to speed up WordPress' ),
-			self::sample( 'sitename', __( 'Site name', 'rankavia' ), 'Example Site' ),
-			self::sample( 'tagline', __( 'Tagline', 'rankavia' ), 'Honest advice for site owners' ),
+			self::sample( 'sitename', __( 'Site name', 'rankavia' ), '' !== $site_name ? $site_name : 'Example Site' ),
+			self::sample( 'tagline', __( 'Tagline', 'rankavia' ), '' !== $tagline ? $tagline : 'Honest advice for site owners' ),
 			self::sample( 'sep', __( 'Separator', 'rankavia' ), '–' ),
 			self::sample( 'excerpt', __( 'Excerpt', 'rankavia' ), 'A practical walkthrough of caching, images and fonts that cuts load time in half.' ),
 			self::sample( 'category', __( 'Category', 'rankavia' ), 'Performance' ),

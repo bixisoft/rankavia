@@ -255,33 +255,27 @@ describe( 'analyse check ids', () => {
 	} );
 } );
 
-describe( 'keyword density boundaries', () => {
+describe( 'keyword use', () => {
 	const density = ( count ) =>
 		find(
 			run( { contentText: textWithDensity( count, 1000 ) } ),
 			'keyword-density'
 		);
 
-	it( 'warns below 0.5%', () => {
-		expect( density( 4 ).status ).toBe( 'warn' );
-		expect( density( 0 ).status ).toBe( 'warn' );
+	it( 'is context only at every density, never a verdict', () => {
+		for ( const count of [ 0, 4, 5, 25, 26, 31, 200 ] ) {
+			expect( density( count ).status ).toBe( 'info' );
+		}
 	} );
 
-	it( 'passes at exactly 0.5%', () => {
-		expect( density( 5 ).status ).toBe( 'pass' );
+	it( 'states the count, the words and the percentage', () => {
+		expect( density( 25 ).detail ).toContain( 'Used 25 times in 1000 words (2.5%)' );
 	} );
 
-	it( 'passes at exactly 2.5%', () => {
-		expect( density( 25 ).status ).toBe( 'pass' );
-	} );
-
-	it( 'warns above 2.5% up to and including 3%', () => {
-		expect( density( 26 ).status ).toBe( 'warn' );
-		expect( density( 30 ).status ).toBe( 'warn' );
-	} );
-
-	it( 'fails above 3%', () => {
-		expect( density( 31 ).status ).toBe( 'fail' );
+	it( 'does not change the score', () => {
+		const score = ( count ) =>
+			run( { contentText: textWithDensity( count, 1000 ) } ).score;
+		expect( score( 31 ) ).toBe( score( 10 ) );
 	} );
 
 	it( 'counts a multi-word keyword as a phrase', () => {
@@ -292,13 +286,12 @@ describe( 'keyword density boundaries', () => {
 				.join( ' ' ) } ${ filler( 980 ) }`,
 		} );
 		// 10 occurrences in 1000 words.
-		expect( find( result, 'keyword-density' ).detail ).toContain( '1%' );
-		expect( find( result, 'keyword-density' ).status ).toBe( 'pass' );
+		expect( find( result, 'keyword-density' ).detail ).toContain( '(1%)' );
 	} );
 
 	it( 'does not divide by zero on empty content', () => {
 		const result = run( { contentText: '' } );
-		expect( find( result, 'keyword-density' ).status ).toBe( 'warn' );
+		expect( find( result, 'keyword-density' ).detail ).toContain( '(0%)' );
 	} );
 } );
 
@@ -323,12 +316,12 @@ describe( 'score', () => {
 	} );
 
 	it( 'drops when a check fails', () => {
-		// One fail among 11 scored checks (all but the 2 info rows).
+		// One fail among 10 scored checks (all but the 3 info rows).
 		const result = run( {
 			title: 'Nothing here but it is long enough ok',
 		} );
 		expect( find( result, 'keyword-in-title' ).status ).toBe( 'fail' );
-		expect( result.score ).toBe( 91 );
+		expect( result.score ).toBe( 90 );
 	} );
 } );
 

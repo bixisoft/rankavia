@@ -39,7 +39,11 @@ export function App( { screenId } ) {
 		<AppShell
 			brand={ __( 'Rankavia', 'rankavia' ) }
 			version={ config.version }
-			screens={ config.screens }
+			screens={
+				Array.isArray( config.navigation ) && config.navigation.length
+					? config.navigation
+					: config.screens
+			}
 			currentScreen={ screenId }
 		>
 			{ content }

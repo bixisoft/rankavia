@@ -44,6 +44,7 @@ class Redirects_Module implements Module {
 		unset( $container );
 		// Register after the Rankavia parent menu so WordPress retains its dashboard link.
 		add_action( 'admin_menu', array( $this, 'menu' ), 20 );
+		add_filter( 'rankavia_admin_nav_links', array( $this, 'nav_link' ) );
 		add_action( 'admin_post_rankavia_redirects', array( $this, 'save' ) );
 		add_action( 'template_redirect', array( $this, 'maybe_redirect' ), 1 );
 	}
@@ -53,22 +54,40 @@ class Redirects_Module implements Module {
 		add_submenu_page( 'rankavia', __( 'Redirects', 'rankavia' ), __( 'Redirects', 'rankavia' ), 'manage_options', self::SLUG, array( $this, 'render' ) );
 	}
 
+	/**
+	 * List this page in the shared Rankavia navigation.
+	 *
+	 * @param mixed $links Links collected so far.
+	 * @return array<int, mixed>
+	 */
+	public function nav_link( $links ): array {
+		$links   = is_array( $links ) ? array_values( $links ) : array();
+		$links[] = array(
+			'id'    => 'redirects',
+			'title' => __( 'Redirects', 'rankavia' ),
+			'slug'  => self::SLUG,
+			'order' => 32,
+		);
+		return $links;
+	}
+
 	/** Render the management form and the currently stored rules. @return void */
 	public function render(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'You cannot manage redirects.', 'rankavia' ) );
 		}
 		$rules = Rules::stored( get_option( self::OPTION, array() ), (string) home_url( '/' ) );
-		echo '<div class="wrap"><h1>' . esc_html__( 'Redirects', 'rankavia' ) . '</h1>';
+		do_action( 'rankavia_admin_shell_open', 'redirects', __( 'Redirects', 'rankavia' ) );
 		if ( null === $rules ) {
-			echo '<div class="notice notice-error"><p>' . esc_html__( 'Stored redirect rules are invalid. No redirects will run until they are repaired.', 'rankavia' ) . '</p></div></div>';
+			echo '<div class="notice notice-error inline"><p>' . esc_html__( 'Stored redirect rules are invalid. No redirects will run until they are repaired.', 'rankavia' ) . '</p></div>';
+			do_action( 'rankavia_admin_shell_close' );
 			return;
 		}
 		echo '<p>' . esc_html__( 'Exact paths only. Destinations must stay on this site. Redirects are skipped for logged-in visitors, requests with query strings, and protected WordPress or commerce paths.', 'rankavia' ) . '</p>';
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only notice code after the admin-post redirect.
 		$notice = isset( $_GET['notice'] ) && is_string( $_GET['notice'] ) ? sanitize_key( wp_unslash( $_GET['notice'] ) ) : '';
 		if ( '' !== $notice ) {
-			echo '<div class="notice notice-info"><p>' . esc_html( $this->notice( $notice ) ) . '</p></div>';
+			echo '<div class="notice notice-info inline"><p>' . esc_html( $this->notice( $notice ) ) . '</p></div>';
 		}
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		wp_nonce_field( 'rankavia_redirects' );
@@ -87,7 +106,11 @@ class Redirects_Module implements Module {
 			submit_button( __( 'Delete', 'rankavia' ), 'delete small', 'submit', false );
 			echo '</form></td></tr>';
 		}
-		echo '</tbody></table></div>';
+		if ( array() === $rules ) {
+			echo '<tr><td colspan="4">' . esc_html__( 'No redirects yet. Add the first one above.', 'rankavia' ) . '</td></tr>';
+		}
+		echo '</tbody></table>';
+		do_action( 'rankavia_admin_shell_close' );
 	}
 
 	/** Process a nonce-protected add or delete, then return to the admin page. @return void */

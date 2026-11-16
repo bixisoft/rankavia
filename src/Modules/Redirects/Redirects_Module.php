@@ -1,6 +1,6 @@
 <?php
 /**
- * Native Rankavia redirect manager and front request handler.
+ * Redirects and the 404 log inside Rankavia SEO.
  *
  * @package Rankavia
  */
@@ -11,13 +11,32 @@ namespace Bixisoft\Rankavia\Modules\Redirects;
 
 use Bixisoft\Rankavia\Vendor\Core\Container;
 use Bixisoft\Rankavia\Vendor\Core\Contracts\Module;
-use Bixisoft\Rankavia\Redirects\Option_Store;
-use Bixisoft\Rankavia\Redirects\Rules;
+use Bixisoft\Rankavia\Vendor\Core\Redirects\Admin_Page;
+use Bixisoft\Rankavia\Vendor\Core\Redirects\Service;
 
-/** A separate operational option keeps redirect rules outside the strict settings schema. */
+/**
+ * Rankavia SEO claims the shared redirect runtime with priority 20, so when the standalone
+ * Redirects & 404 plugin is also active this module owns the handler, tables and screen.
+ */
 class Redirects_Module implements Module {
-	public const OPTION = 'rankavia_redirect_rules';
-	public const SLUG   = 'rankavia-redirects';
+	public const SLUG = 'rankavia-redirects';
+
+	/** Package name used in the ownership claim. */
+	public const PROVIDER = 'rankavia';
+
+	/**
+	 * Redirect runtime.
+	 *
+	 * @var Service|null
+	 */
+	private ?Service $service = null;
+
+	/**
+	 * Admin screen.
+	 *
+	 * @var Admin_Page|null
+	 */
+	private ?Admin_Page $page = null;
 
 	/** Return the module identifier. @return string */
 	public function id(): string {
@@ -35,23 +54,53 @@ class Redirects_Module implements Module {
 	}
 
 	/**
-	 * Register admin and front hooks.
+	 * Claim the runtime and add the menu entry.
 	 *
 	 * @param Container $container Shared container.
 	 * @return void
 	 */
 	public function boot( Container $container ): void {
 		unset( $container );
+		Service::claim( self::PROVIDER, 20 );
+		add_action( 'init', array( $this, 'start' ), 5 );
 		// Register after the Rankavia parent menu so WordPress retains its dashboard link.
 		add_action( 'admin_menu', array( $this, 'menu' ), 20 );
 		add_filter( 'rankavia_admin_nav_links', array( $this, 'nav_link' ) );
-		add_action( 'admin_post_rankavia_redirects', array( $this, 'save' ) );
-		add_action( 'template_redirect', array( $this, 'maybe_redirect' ), 1 );
+	}
+
+	/**
+	 * Boot the runtime when this package owns it.
+	 *
+	 * @return void
+	 */
+	public function start(): void {
+		if ( self::PROVIDER !== Service::owner() ) {
+			return;
+		}
+		$this->service = new Service();
+		$this->service->boot();
+		$this->page = new Admin_Page(
+			$this->service,
+			self::SLUG,
+			self::labels(),
+			array(
+				'open'  => static function ( string $title ): void {
+					do_action( 'rankavia_admin_shell_open', 'redirects', $title );
+				},
+				'close' => static function (): void {
+					do_action( 'rankavia_admin_shell_close' );
+				},
+			)
+		);
+		$this->page->hooks();
 	}
 
 	/** Add a native submenu under the existing Rankavia parent. @return void */
 	public function menu(): void {
-		add_submenu_page( 'rankavia', __( 'Redirects', 'rankavia' ), __( 'Redirects', 'rankavia' ), 'manage_options', self::SLUG, array( $this, 'render' ) );
+		if ( null === $this->page ) {
+			return;
+		}
+		add_submenu_page( 'rankavia', __( 'Redirects', 'rankavia' ), __( 'Redirects', 'rankavia' ), 'manage_options', self::SLUG, array( $this->page, 'render' ) );
 	}
 
 	/**
@@ -71,166 +120,70 @@ class Redirects_Module implements Module {
 		return $links;
 	}
 
-	/** Render the management form and the currently stored rules. @return void */
-	public function render(): void {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You cannot manage redirects.', 'rankavia' ) );
-		}
-		$rules = Rules::stored( get_option( self::OPTION, array() ), (string) home_url( '/' ) );
-		do_action( 'rankavia_admin_shell_open', 'redirects', __( 'Redirects', 'rankavia' ) );
-		if ( null === $rules ) {
-			echo '<div class="notice notice-error inline"><p>' . esc_html__( 'Stored redirect rules are invalid. No redirects will run until they are repaired.', 'rankavia' ) . '</p></div>';
-			do_action( 'rankavia_admin_shell_close' );
-			return;
-		}
-		echo '<p>' . esc_html__( 'Exact paths only. Destinations must stay on this site. Redirects are skipped for logged-in visitors, requests with query strings, and protected WordPress or commerce paths.', 'rankavia' ) . '</p>';
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only notice code after the admin-post redirect.
-		$notice = isset( $_GET['notice'] ) && is_string( $_GET['notice'] ) ? sanitize_key( wp_unslash( $_GET['notice'] ) ) : '';
-		if ( '' !== $notice ) {
-			echo '<div class="notice notice-info inline"><p>' . esc_html( $this->notice( $notice ) ) . '</p></div>';
-		}
-		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
-		wp_nonce_field( 'rankavia_redirects' );
-		echo '<input type="hidden" name="action" value="rankavia_redirects"><input type="hidden" name="revision" value="' . esc_attr( $this->revision( $rules ) ) . '">';
-		echo '<input type="hidden" name="operation" value="add"><table class="form-table"><tbody>';
-		echo '<tr><th><label for="rankavia-source">' . esc_html__( 'Source path', 'rankavia' ) . '</label></th><td><input id="rankavia-source" name="source" type="text" maxlength="200" required placeholder="/old-page/"></td></tr>';
-		echo '<tr><th><label for="rankavia-target">' . esc_html__( 'Destination', 'rankavia' ) . '</label></th><td><input id="rankavia-target" name="target" type="text" maxlength="2048" placeholder="/new-page/"><p class="description">' . esc_html__( 'Leave empty for 410 Gone.', 'rankavia' ) . '</p></td></tr>';
-		echo '<tr><th><label for="rankavia-status">' . esc_html__( 'Status', 'rankavia' ) . '</label></th><td><select id="rankavia-status" name="status"><option value="301">301</option><option value="302">302</option><option value="410">410</option></select></td></tr>';
-		echo '</tbody></table>';
-		submit_button( __( 'Add rule', 'rankavia' ) );
-		echo '</form><h2>' . esc_html__( 'Current rules', 'rankavia' ) . '</h2><table class="widefat striped"><thead><tr><th>' . esc_html__( 'Source', 'rankavia' ) . '</th><th>' . esc_html__( 'Destination', 'rankavia' ) . '</th><th>' . esc_html__( 'Status', 'rankavia' ) . '</th><th>' . esc_html__( 'Action', 'rankavia' ) . '</th></tr></thead><tbody>';
-		foreach ( $rules as $rule ) {
-			echo '<tr><td>' . esc_html( $rule['source'] ) . '</td><td>' . esc_html( $rule['target'] ) . '</td><td>' . esc_html( (string) $rule['status'] ) . '</td><td><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
-			wp_nonce_field( 'rankavia_redirects' );
-			echo '<input type="hidden" name="action" value="rankavia_redirects"><input type="hidden" name="operation" value="delete"><input type="hidden" name="revision" value="' . esc_attr( $this->revision( $rules ) ) . '"><input type="hidden" name="source" value="' . esc_attr( $rule['source'] ) . '">';
-			submit_button( __( 'Delete', 'rankavia' ), 'delete small', 'submit', false );
-			echo '</form></td></tr>';
-		}
-		if ( array() === $rules ) {
-			echo '<tr><td colspan="4">' . esc_html__( 'No redirects yet. Add the first one above.', 'rankavia' ) . '</td></tr>';
-		}
-		echo '</tbody></table>';
-		do_action( 'rankavia_admin_shell_close' );
-	}
-
-	/** Process a nonce-protected add or delete, then return to the admin page. @return void */
-	public function save(): void {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You cannot manage redirects.', 'rankavia' ) );
-		}
-		check_admin_referer( 'rankavia_redirects' );
-		$snapshot = Option_Store::read();
-		$rules    = Rules::stored( $snapshot['rules'], (string) home_url( '/' ) );
-		if ( null === $rules ) {
-			$this->return_to_page( 'invalid' );
-			return;
-		}
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Exact digest comparison after nonce verification.
-		$revision = isset( $_POST['revision'] ) && is_string( $_POST['revision'] ) ? wp_unslash( $_POST['revision'] ) : '';
-		if ( ! hash_equals( $this->revision( $rules ), $revision ) ) {
-			$this->return_to_page( 'stale' );
-			return;
-		}
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Rules::create validates the exact unslashed source.
-		$source = isset( $_POST['source'] ) && is_string( $_POST['source'] ) ? wp_unslash( $_POST['source'] ) : '';
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Compared only to fixed operation names.
-		$operation = isset( $_POST['operation'] ) && is_string( $_POST['operation'] ) ? wp_unslash( $_POST['operation'] ) : '';
-		if ( 'add' === $operation ) {
-			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Rules::create validates the exact destination.
-			$target = isset( $_POST['target'] ) && is_string( $_POST['target'] ) ? wp_unslash( $_POST['target'] ) : '';
-			$status = isset( $_POST['status'] ) && is_scalar( $_POST['status'] ) ? (int) $_POST['status'] : 0;
-			$rule   = Rules::create( $source, $target, $status, (string) home_url( '/' ), $rules );
-			if ( null === $rule ) {
-				$this->return_to_page( 'invalid' );
-				return;
-			}
-			$rules[] = $rule;
-		} elseif ( 'delete' === $operation ) {
-			$rules = array_values(
-				array_filter(
-					$rules,
-					static function ( array $rule ) use ( $source ): bool {
-						return $rule['source'] !== $source;
-					}
-				)
-			);
-		} else {
-			$this->return_to_page( 'invalid' );
-			return;
-		}
-		$this->return_to_page( Option_Store::compare_and_swap( $snapshot['raw'], $rules ) ? 'saved' : 'stale' );
-	}
-
-	/** Apply one exact stored rule for an eligible front request. @return void */
-	public function maybe_redirect(): void {
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Server method is compared to GET/HEAD only.
-		$method = isset( $_SERVER['REQUEST_METHOD'] ) ? (string) $_SERVER['REQUEST_METHOD'] : '';
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Exact server URI is checked by Rules::safe_path; normalization would change matching.
-		$uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : '';
-		if ( ! in_array( $method, array( 'GET', 'HEAD' ), true ) || is_admin() || is_user_logged_in() || wp_doing_ajax() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) || '' === $uri || false !== strpos( $uri, '?' ) ) {
-			return;
-		}
-		$home = (string) home_url( '/' );
-		if ( ! Rules::safe_path( $uri, $home ) ) {
-			return;
-		}
-		$rules = Rules::stored( get_option( self::OPTION, array() ), $home );
-		if ( null === $rules ) {
-			return;
-		}
-		foreach ( $rules as $rule ) {
-			if ( $uri !== $rule['source'] ) {
-				continue;
-			}
-			if ( 410 === $rule['status'] ) {
-				status_header( 410 );
-				nocache_headers();
-			} else {
-				wp_safe_redirect( $rule['target'], $rule['status'] );
-			}
-			$this->terminate();
-			return;
-		}
-	}
-
 	/**
-	 * Hash the displayed rules to detect stale forms.
+	 * Translated labels for the shared screen.
 	 *
-	 * @param array<int,array<string,mixed>> $rules Rules.
-	 * @return string
+	 * @return array<string,string>
 	 */
-	private function revision( array $rules ): string {
-		return hash( 'sha256', (string) wp_json_encode( $rules ) );
-	}
-
-	/**
-	 * Return a safe status message.
-	 *
-	 * @param string $code Notice code.
-	 * @return string
-	 */
-	private function notice( string $code ): string {
-		$messages = array(
-			'saved'   => __( 'Redirect rules saved.', 'rankavia' ),
-			'stale'   => __( 'Rules changed in another tab. Reload and try again.', 'rankavia' ),
-			'invalid' => __( 'The rule is invalid or the stored rules need repair.', 'rankavia' ),
+	public static function labels(): array {
+		return array(
+			'forbidden'           => __( 'You cannot manage redirects.', 'rankavia' ),
+			'title'               => __( 'Redirects', 'rankavia' ),
+			'tab_redirects'       => __( 'Redirects', 'rankavia' ),
+			'tab_not_found'       => __( 'Not found (404)', 'rankavia' ),
+			'intro'               => __( 'Send an old address on this site to a new one. Exact paths only; destinations stay on this site. Logged-in visitors and requests with a query string are not redirected.', 'rankavia' ),
+			'add_heading'         => __( 'Add a redirect', 'rankavia' ),
+			'rules_heading'       => __( 'Redirects', 'rankavia' ),
+			'search'              => __( 'Search redirects', 'rankavia' ),
+			'col_source'          => __( 'Old address', 'rankavia' ),
+			'col_target'          => __( 'New address', 'rankavia' ),
+			'col_status'          => __( 'Type', 'rankavia' ),
+			'col_origin'          => __( 'Added by', 'rankavia' ),
+			'col_used'            => __( 'Last used', 'rankavia' ),
+			'col_action'          => __( 'Action', 'rankavia' ),
+			'origin_manual'       => __( 'You', 'rankavia' ),
+			'origin_slug'         => __( 'Address change', 'rankavia' ),
+			'origin_not_found'    => __( 'From the 404 list', 'rankavia' ),
+			'origin_migrated'     => __( 'Earlier version', 'rankavia' ),
+			'never'               => __( 'Not yet', 'rankavia' ),
+			'delete'              => __( 'Delete', 'rankavia' ),
+			'empty'               => __( 'No redirects yet. Add the first one above.', 'rankavia' ),
+			'no_match'            => __( 'No redirects match your search.', 'rankavia' ),
+			'export'              => __( 'Download all as CSV', 'rankavia' ),
+			'log_intro'           => __( 'Addresses on this site that visitors asked for and did not find, most requested first. Only the path and a count are kept: no IP address, query string or browser details. Paths not seen for 30 days are removed.', 'rankavia' ),
+			/* translators: %s: number of requests. */
+			'log_dropped'         => __( 'The list is full, so %s requests for new missing addresses were counted but not listed. Fix or dismiss some rows to make room.', 'rankavia' ),
+			'col_path'            => __( 'Missing address', 'rankavia' ),
+			'col_hits'            => __( 'Requests', 'rankavia' ),
+			'col_last_seen'       => __( 'Last requested', 'rankavia' ),
+			'col_fix'             => __( 'Fix', 'rankavia' ),
+			'forget'              => __( 'Dismiss', 'rankavia' ),
+			'log_empty'           => __( 'No missing pages recorded yet.', 'rankavia' ),
+			'clear'               => __( 'Clear the whole list', 'rankavia' ),
+			'source'              => __( 'Old address (path)', 'rankavia' ),
+			'target'              => __( 'New address', 'rankavia' ),
+			'target_help'         => __( 'A path such as /new-page/ or a full address on this site. Leave empty for "Gone".', 'rankavia' ),
+			'status'              => __( 'Type', 'rankavia' ),
+			'status_301'          => __( '301 Moved permanently', 'rankavia' ),
+			'status_302'          => __( '302 Moved temporarily', 'rankavia' ),
+			'status_410'          => __( '410 Gone', 'rankavia' ),
+			'add'                 => __( 'Add redirect', 'rankavia' ),
+			'redirect'            => __( 'Redirect', 'rankavia' ),
+			'migration_failed'    => __( 'Redirects saved by an earlier version could not be moved to the new list because they look damaged. They were left as they were, and none of them run. Please contact support.', 'rankavia' ),
+			'notice_added'        => __( 'Redirect added.', 'rankavia' ),
+			'notice_deleted'      => __( 'Redirect deleted.', 'rankavia' ),
+			'notice_invalid'      => __( 'That redirect cannot be added: check the paths, and that it does not point back to itself or lead in a circle.', 'rankavia' ),
+			'notice_exists'       => __( 'That old address already has a redirect.', 'rankavia' ),
+			'notice_stale'        => __( 'The list changed in the meantime. Reload and try again.', 'rankavia' ),
+			'notice_undo_expired' => __( 'There is nothing to undo any more.', 'rankavia' ),
+			'notice_undone'       => __( 'Change undone.', 'rankavia' ),
+			'notice_forgotten'    => __( 'Address dismissed from the list.', 'rankavia' ),
+			'notice_cleared'      => __( 'The list of missing pages was cleared.', 'rankavia' ),
+			'undo'                => __( 'Undo', 'rankavia' ),
+			'previous'            => __( 'Previous page', 'rankavia' ),
+			'next'                => __( 'Next page', 'rankavia' ),
+			/* translators: 1: current page number, 2: number of pages. */
+			'page_of'             => __( 'Page %1$s of %2$s', 'rankavia' ),
 		);
-		return $messages[ $code ] ?? '';
-	}
-
-	/**
-	 * Finish a POST through the admin page.
-	 *
-	 * @param string $notice Notice code.
-	 * @return void
-	 */
-	private function return_to_page( string $notice ): void {
-		wp_safe_redirect( admin_url( 'admin.php?page=' . self::SLUG . '&notice=' . $notice ) );
-		$this->terminate();
-	}
-
-	/** Exit after sending the response; override in tests. @return void */
-	protected function terminate(): void {
-		exit;
 	}
 }

@@ -3,7 +3,7 @@
         'name' => 'bixisoft/rankavia',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'a8bf8f3467046dc95eeb00abc7e7183c577461e4',
+        'reference' => '44398de5c53554087b3933eb9d630c6ac1baf67f',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -22,7 +22,7 @@
         'bixisoft/rankavia' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'a8bf8f3467046dc95eeb00abc7e7183c577461e4',
+            'reference' => '44398de5c53554087b3933eb9d630c6ac1baf67f',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

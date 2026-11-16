@@ -2,15 +2,15 @@
 
 Free, GPL-2.0-or-later WordPress plugin by Bixisoft.
 
-**Development preview — plugin version 0.1.0; release v0.1.0-preview.4.** Test on a disposable copy before using it on a live site. This repository is public source distribution, not a WordPress.org listing or a stable compatibility certification.
+**Development preview — plugin version 0.1.0; release v0.1.0-preview.5.** Test on a disposable copy before using it on a live site. This repository is public source distribution, not a WordPress.org listing or a stable compatibility certification.
 
-Metadata and social tags, dashboard visibility guidance with corrected editing and image-order messages, sitemap/robots/crawler controls, optional llms.txt, basic JSON-LD, breadcrumbs, HTML sitemap, FAQ blocks and exact-path redirects. Yoast/Rank Math migration supports selected post/page fields in signed batches of 20, with preservation and conflict-aware undo; it is not whole-site migration.
+Metadata and social tags, dashboard visibility guidance with corrected editing and image-order messages, sitemap/robots/crawler controls, optional llms.txt, basic JSON-LD, breadcrumbs, HTML sitemap, FAQ blocks unlimited exact redirects, automatic redirects when a page address changes, and a private list of missing pages (404). Yoast/Rank Math migration supports selected post/page fields in signed batches of 20, with preservation and conflict-aware undo; it is not whole-site migration.
 
 ## Download and install
 
-Download **rankavia.zip** from [the preview release](https://github.com/bixisoft/rankavia/releases/tag/v0.1.0-preview.4). Upload that asset through WordPress Plugins → Add New → Upload Plugin, then activate. The GitHub-generated source archives contain development material and are not the install ZIP. Keep a database and file backup, especially before migration or changing asset loading.
+Download **rankavia.zip** from [the preview release](https://github.com/bixisoft/rankavia/releases/tag/v0.1.0-preview.5). Upload that asset through WordPress Plugins → Add New → Upload Plugin, then activate. The GitHub-generated source archives contain development material and are not the install ZIP. Keep a database and file backup, especially before migration or changing asset loading.
 
-Requires WordPress 6.5+ and PHP 7.4+. This preview was activated from its exact install ZIP on WordPress 7.1.4/PHP 7.4 alongside Rankavia Speed. Plugin Check was not re-run for this preview; the last result (preview 3) was 0 errors and 34 existing migration SQL warnings. Multisite, broad theme/builder acceptance and real source-plugin migration matrices remain incomplete. Read [VALIDATION.md](VALIDATION.md) for precise limits and hashes.
+Requires WordPress 6.5+ and PHP 7.4+. This preview was activated from its exact install ZIP on WordPress 7.1.4/PHP 7.4, alone and together with Rankavia Redirects & 404. Plugin Check was not re-run for this preview; the last result (preview 3) was 0 errors and 34 existing migration SQL warnings. Multisite, broad theme/builder acceptance and real source-plugin migration matrices remain incomplete. Read [VALIDATION.md](VALIDATION.md) for precise limits and hashes.
 
 ## Source and building
 
